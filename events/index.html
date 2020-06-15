@@ -5,11 +5,11 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
-<link href="https://github.com/GeyserMC/Geyser/contributing/" rel="canonical"/>
+<link href="https://github.com/GeyserMC/Geyser/events/" rel="canonical"/>
 <meta content="Geyser Devs" name="author"/>
 <link href="../img/favicon.ico" rel="shortcut icon"/>
 <meta content="mkdocs-1.1, mkdocs-material-5.1.3" name="generator"/>
-<title>Contributing - GeyserMC</title>
+<title>Events - GeyserMC</title>
 <link href="../assets/stylesheets/main.62d34fff.min.css" rel="stylesheet"/>
 <link href="../assets/stylesheets/palette.c8acc6db.min.css" rel="stylesheet"/>
 <meta content="#3f51b5" name="theme-color"/>
@@ -23,7 +23,7 @@
 <input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
 <label class="md-overlay" for="__drawer"></label>
 <div data-md-component="skip">
-<a class="md-skip" href="#contributing">
+<a class="md-skip" href="#events">
           Skip to content
         </a>
 </div>
@@ -44,7 +44,7 @@
           </span>
 <span class="md-header-nav__topic md-ellipsis">
             
-              Contributing
+              Events
             
           </span>
 </div>
@@ -118,26 +118,16 @@
       Introduction
     </a>
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../events/" title="Events">
-      Events
-    </a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="../plugins/" title="Plugins">
-      Plugins
-    </a>
-</li>
 <li class="md-nav__item md-nav__item--active">
 <input class="md-nav__toggle md-toggle" data-md-toggle="toc" id="__toc" type="checkbox"/>
 <label class="md-nav__link md-nav__link--active" for="__toc">
-        Contributing
+        Events
         <span class="md-nav__icon md-icon">
 <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3,9H17V7H3V9M3,13H17V11H3V13M3,17H17V15H3V17M19,17H21V15H19V17M19,7V9H21V7H19M19,13H21V11H19V13Z"></path></svg>
 </span>
 </label>
-<a class="md-nav__link md-nav__link--active" href="./" title="Contributing">
-      Contributing
+<a class="md-nav__link md-nav__link--active" href="./" title="Events">
+      Events
     </a>
 <nav aria-label="Table of contents" class="md-nav md-nav--secondary">
 <label class="md-nav__title" for="__toc">
@@ -148,34 +138,48 @@
     </label>
 <ul class="md-nav__list" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="#new-ideas-or-bug-reports">
-    New ideas or Bug Reports
+<a class="md-nav__link" href="#triggering-an-event">
+    Triggering an Event
   </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#contributing-code">
-    Contributing Code
+<a class="md-nav__link" href="#listening-to-an-event">
+    Listening to an Event
   </a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#contributing-documentation">
-    Contributing Documentation
-  </a>
-<nav aria-label="Contributing Documentation" class="md-nav">
+<nav aria-label="Listening to an Event" class="md-nav">
 <ul class="md-nav__list">
 <li class="md-nav__item">
-<a class="md-nav__link" href="#requirements">
-    Requirements
+<a class="md-nav__link" href="#class-event-handler">
+    Class Event Handler
   </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#dev-environment">
-    Dev Environment
+<a class="md-nav__link" href="#anonymous-lambda">
+    Anonymous Lambda
   </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#change-pdf-theme">
-    Change PDF Theme
+<a class="md-nav__link" href="#event-context">
+    Event Context
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#events_1">
+    Events
+  </a>
+<nav aria-label="Events" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#disableevent">
+    DisableEvent
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#enableevent">
+    EnableEvent
   </a>
 </li>
 </ul>
@@ -183,6 +187,16 @@
 </li>
 </ul>
 </nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../plugins/" title="Plugins">
+      Plugins
+    </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../contributing/" title="Contributing">
+      Contributing
+    </a>
 </li>
 </ul>
 </nav>
@@ -201,34 +215,48 @@
     </label>
 <ul class="md-nav__list" data-md-scrollfix="">
 <li class="md-nav__item">
-<a class="md-nav__link" href="#new-ideas-or-bug-reports">
-    New ideas or Bug Reports
+<a class="md-nav__link" href="#triggering-an-event">
+    Triggering an Event
   </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#contributing-code">
-    Contributing Code
+<a class="md-nav__link" href="#listening-to-an-event">
+    Listening to an Event
   </a>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#contributing-documentation">
-    Contributing Documentation
-  </a>
-<nav aria-label="Contributing Documentation" class="md-nav">
+<nav aria-label="Listening to an Event" class="md-nav">
 <ul class="md-nav__list">
 <li class="md-nav__item">
-<a class="md-nav__link" href="#requirements">
-    Requirements
+<a class="md-nav__link" href="#class-event-handler">
+    Class Event Handler
   </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#dev-environment">
-    Dev Environment
+<a class="md-nav__link" href="#anonymous-lambda">
+    Anonymous Lambda
   </a>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#change-pdf-theme">
-    Change PDF Theme
+<a class="md-nav__link" href="#event-context">
+    Event Context
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#events_1">
+    Events
+  </a>
+<nav aria-label="Events" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#disableevent">
+    DisableEvent
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#enableevent">
+    EnableEvent
   </a>
 </li>
 </ul>
@@ -241,50 +269,84 @@
 </div>
 <div class="md-content">
 <article class="md-content__inner md-typeset"><a class="md-content__icon pdf-download-btn" download href="../pdf/documentation.pdf" title="Download"><i class="fa fas fa-download"></i><small> PDF</small></a>
-<a class="md-content__button md-icon" href="https://github.com/GeyserMC/Geyser/edit/master/docs/contributing.md" title="Edit this page">
+<a class="md-content__button md-icon" href="https://github.com/GeyserMC/Geyser/edit/master/docs/events.md" title="Edit this page">
 <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z"></path></svg>
 </a>
-<h1 id="contributing">Contributing<a class="headerlink" href="#contributing" title="Permanent link">¶</a></h1>
-<p>Here are some ways that you can help contribute to this project.</p>
-<h2 id="new-ideas-or-bug-reports">New ideas or Bug Reports<a class="headerlink" href="#new-ideas-or-bug-reports" title="Permanent link">¶</a></h2>
-<p>Need something? Found a bug? Or just have a brilliant idea? Head to the <a href="https://github.com/GeyserMC/Geyser/issues">Issues</a> and create a new one.</p>
-<p>Please feel free to reach out to us on <a href="http://discord.geysermc.org/">Discord</a> if
-you're interested in helping out with Geyser.</p>
-<h2 id="contributing-code">Contributing Code<a class="headerlink" href="#contributing-code" title="Permanent link">¶</a></h2>
-<p>If you know Java then take a look at open issues and create a pull request.</p>
-<p>Do the following to build the code:</p>
-<div class="highlight"><pre><span></span><code>git clone https://github.com/GeyserMC/Geyser
-<span class="nb">cd</span> EduSupport
-git submodule update --init --recursive
-mvn clean install
+<h1 id="events">Events<a class="headerlink" href="#events" title="Permanent link">¶</a></h1>
+<p>Geyser has an Event Manager that allows one to listen to or trigger an event easily. Events can be easily defined
+either by defining a method to be an event handler or by providing a lambda.  Each event handler will be executed
+in turn based upon their priority.</p>
+<h2 id="triggering-an-event">Triggering an Event<a class="headerlink" href="#triggering-an-event" title="Permanent link">¶</a></h2>
+<p>An event is derived from either <code>GeyserEvent</code> or <code>CancellableGeyserEvent</code>.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyCustomEvent</span> <span class="kd">extends</span> <span class="n">GeyserEvent</span> <span class="p">{</span>
+<span class="p">}</span>
 </code></pre></div>
-<h2 id="contributing-documentation">Contributing Documentation<a class="headerlink" href="#contributing-documentation" title="Permanent link">¶</a></h2>
-<p>If you can help improve the documentation it would be highly appreciated. Have a look under the <code>docs</code> folder for the existing documentation.</p>
-<p>The documentation is built using <code>mkdocs</code>. You can set up a hot-build dev environment that will auto-refresh changes as they are made.</p>
-<h3 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">¶</a></h3>
-<ul>
-<li>python3</li>
-<li>pip3</li>
-<li>npm (only if changing themes)</li>
-</ul>
-<p>Install dependencies by running:</p>
-<div class="highlight"><pre><span></span><code>pip3 install -r requirements.txt
-</code></pre></div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>It's recommended to use a <code>virtualenv</code> so that you don't pollute your system environment.</p>
 </div>
-<h3 id="dev-environment">Dev Environment<a class="headerlink" href="#dev-environment" title="Permanent link">¶</a></h3>
-<p>To start a http document server on <code>http://127.0.0.1:8000</code> execute:</p>
-<div class="highlight"><pre><span></span><code>mkdocs serve
+<p>The event is triggered through the <code>triggerEvent</code> method of the Event Manager.  </p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code><span class="n">eventManager</span><span class="p">.</span><span class="na">triggerEvent</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCustomEvent</span><span class="p">());</span>
 </code></pre></div>
-<h3 id="change-pdf-theme">Change PDF Theme<a class="headerlink" href="#change-pdf-theme" title="Permanent link">¶</a></h3>
-<p>Edit the PDF theme under <code>docs/theme/pdf</code>. Rebuild by doing the following:</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> docs/theme/pdf
-npm install
-npm run build-compressed
+</div>
+<h2 id="listening-to-an-event">Listening to an Event<a class="headerlink" href="#listening-to-an-event" title="Permanent link">¶</a></h2>
+<p>There are two ways to listen for an event. One can either create an event handler method or one can create an anonymous
+lamda to be executed when the event is triggered.</p>
+<h3 id="class-event-handler">Class Event Handler<a class="headerlink" href="#class-event-handler" title="Permanent link">¶</a></h3>
+<p>An event handler method is a method that is annotated with <code>@Event</code>. The class it belongs to must also be registered
+with the event manager.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyClass</span> <span class="p">{</span>
+
+    <span class="nd">@Event</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onEnable</span><span class="p">(</span><span class="n">EventContext</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">MyCustomEvent</span> <span class="n">event</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">System</span><span class="p">.</span><span class="na">err</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"Hello World"</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="p">...</span>
+
+<span class="n">GeyserConnecter</span><span class="p">.</span><span class="na">getInstance</span><span class="p">().</span><span class="na">getEventManager</span><span class="p">.</span><span class="na">registerEvents</span><span class="p">(</span><span class="k">new</span> <span class="n">MyClass</span><span class="p">());</span>
 </code></pre></div>
-<p>This will update <code>pdf.css</code> under <code>docs/css/pdf.css</code>. Rebuilding the docs will now use the new theme.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Plugins should use the <code>registerEvents</code> method inherited from <code>GeyserPlugin</code>.</p>
+</div>
+<p>The <code>@Event</code> annotation has the following optional parameters:</p>
+<ul>
+<li><strong>priority</strong> - Integer from 0 - 100. Default <code>50</code>. Event Handlers are executed in order from lowest to highest priority.</li>
+<li><strong>ignoreCancelled</strong> - Boolean. Default <code>true</code>. If true then if an event is cancelled the handler will not be executed.</li>
+</ul>
+<p>The <code>EventContext</code> will be discussed later. <code>EnableEvent</code> is an event and is also discussed later.</p>
+<h3 id="anonymous-lambda">Anonymous Lambda<a class="headerlink" href="#anonymous-lambda" title="Permanent link">¶</a></h3>
+<p>An event can be hooked through the <code>on</code> method of the EventManager provided with an anonymous function. This allows
+code to be placed logically close to where it is related in the code instead of having to set up a separate class and
+method listeners.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code><span class="n">GeyserConnector</span><span class="p">.</span><span class="na">getInstance</span><span class="p">().</span><span class="na">getEventManager</span><span class="p">().</span><span class="na">on</span><span class="p">(</span><span class="n">MyCustomEvent</span><span class="p">.</span><span class="na">class</span><span class="p">,</span> <span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">{</span>
+    <span class="n">System</span><span class="p">.</span><span class="na">err</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"Hello World"</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Plugins should use the <code>on</code> method inherited from <code>GeyserPlugin</code>.</p>
+</div>
+<p>This method takes 2 optional parameters specifying the priority of the event and if the handler should ignore cancelled events.</p>
+<h3 id="event-context">Event Context<a class="headerlink" href="#event-context" title="Permanent link">¶</a></h3>
+<p>The event handler receives an EventContext in addition to the Event class. The EventContext holds anything related to the
+EventHandler itself and presently only allows an EventHandler to <code>unregister</code> itself.</p>
+<h2 id="events_1">Events<a class="headerlink" href="#events_1" title="Permanent link">¶</a></h2>
+<p>Geyser has the following predefined Events.</p>
+<h3 id="disableevent">DisableEvent<a class="headerlink" href="#disableevent" title="Permanent link">¶</a></h3>
+<p>Triggered when a Plugin is disabled.</p>
+<h3 id="enableevent">EnableEvent<a class="headerlink" href="#enableevent" title="Permanent link">¶</a></h3>
+<p><strong>cancellable</strong></p>
+<p>Triggered when a Plugin is enabled. If cancelled then the plugin will be unloaded and no <code>DisableEvent</code> will be triggered.</p>
 <hr/>
 <div class="md-source-date">
 <small>
@@ -299,7 +361,7 @@ npm run build-compressed
 <footer class="md-footer">
 <div class="md-footer-nav">
 <nav aria-label="Footer" class="md-footer-nav__inner md-grid">
-<a class="md-footer-nav__link md-footer-nav__link--prev" href="../plugins/" rel="prev" title="Plugins">
+<a class="md-footer-nav__link md-footer-nav__link--prev" href=".." rel="prev" title="Introduction">
 <div class="md-footer-nav__button md-icon">
 <svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"></path></svg>
 </div>
@@ -308,8 +370,21 @@ npm run build-compressed
 <span class="md-footer-nav__direction">
                   Previous
                 </span>
+                Introduction
+              </div>
+</div>
+</a>
+<a class="md-footer-nav__link md-footer-nav__link--next" href="../plugins/" rel="next" title="Plugins">
+<div class="md-footer-nav__title">
+<div class="md-ellipsis">
+<span class="md-footer-nav__direction">
+                  Next
+                </span>
                 Plugins
               </div>
+</div>
+<div class="md-footer-nav__button md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z"></path></svg>
 </div>
 </a>
 </nav>
