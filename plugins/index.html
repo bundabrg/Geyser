@@ -265,21 +265,27 @@ maven repository that holds a build of this branch.  This will change in the fut
         <span class="p">}</span>
 
         <span class="nd">@Event</span>
-        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onEnable</span><span class="p">(</span><span class="n">EventContext</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">EnableEvent</span> <span class="n">event</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">System</span><span class="p">.</span><span class="na">err</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"I'm alive"</span><span class="p">);</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onEnable</span><span class="p">(</span><span class="n">EventContext</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">PluginEnableEvent</span> <span class="n">event</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="na">getPlugin</span><span class="p">()</span> <span class="o">==</span> <span class="k">this</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">System</span><span class="p">.</span><span class="na">err</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"I'm alive"</span><span class="p">);</span>
 
-            <span class="c1">// Register another class with event handlers</span>
-            <span class="n">registerEvents</span><span class="p">(</span><span class="k">new</span> <span class="n">MyAdditionalClass</span><span class="p">());</span>
+                <span class="c1">// Register another class with event handlers</span>
+                <span class="n">registerEvents</span><span class="p">(</span><span class="k">new</span> <span class="n">MyAdditionalClass</span><span class="p">());</span>
 
-            <span class="c1">// Example of lambda event hook</span>
-            <span class="n">on</span><span class="p">(</span><span class="n">DisableEvent</span><span class="p">.</span><span class="na">class</span><span class="p">,</span> <span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">{</span>
-                <span class="n">System</span><span class="p">.</span><span class="na">err</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"I'm also dead"</span><span class="p">);</span>
-            <span class="p">},</span> <span class="n">PRIORITY</span><span class="p">.</span><span class="na">HIGH</span><span class="p">);</span>      
+                <span class="c1">// Example of lambda event hook</span>
+                <span class="n">on</span><span class="p">(</span><span class="n">PluginDisableEvent</span><span class="p">.</span><span class="na">class</span><span class="p">,</span> <span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">{</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="na">getPlugin</span><span class="p">()</span> <span class="o">==</span> <span class="n">MyPlugin</span><span class="p">.</span><span class="na">this</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="n">System</span><span class="p">.</span><span class="na">err</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"I'm also dead"</span><span class="p">);</span>
+                    <span class="p">}</span>
+                <span class="p">},</span> <span class="n">PRIORITY</span><span class="p">.</span><span class="na">HIGH</span><span class="p">);</span>
+            <span class="p">}</span>
         <span class="p">}</span>
 
         <span class="nd">@Event</span>
-        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onDisable</span><span class="p">(</span><span class="n">EventContext</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">DisableEvent</span> <span class="n">event</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">System</span><span class="p">.</span><span class="na">err</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"I'm dead"</span><span class="p">);</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onDisable</span><span class="p">(</span><span class="n">EventContext</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">PluginDisableEvent</span> <span class="n">event</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="na">getPlugin</span><span class="p">()</span> <span class="o">==</span> <span class="k">this</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">System</span><span class="p">.</span><span class="na">err</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"I'm dead"</span><span class="p">);</span>
+            <span class="p">}</span>
         <span class="p">}</span>
 
     <span class="p">}</span>
@@ -298,7 +304,8 @@ provides details about the plugin such as its version and author(s).</p>
 <h2 id="plugin-events">Plugin Events<a class="headerlink" href="#plugin-events" title="Permanent link">¶</a></h2>
 <p>A plugin will generally hook into several events and provides its own event registration inherited from <code>GeyserPlugin</code>.</p>
 <p>A plugin class will look for any methods annotated with <code>@Event</code> and will treat them as Event Handlers, using reflection
-to determine which event is being trapped. In the previous example the plugin has trapped both the <code>EnableEvent</code> and <code>DisableEvent</code>.</p>
+to determine which event is being trapped. In the previous example the plugin has trapped both the <code>PluginEnableEvent</code> 
+and <code>PluginDisableEvent</code>.</p>
 <p>Please refer to <a href="../events/">events</a> for more information about the event system. </p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -314,7 +321,7 @@ should use the plugins own registration methods in preference to those in the Ev
 <div class="md-source-date">
 <small>
     
-      Last update: <span class="timeago" datetime="1592222349000" locale="en"></span>
+      Last update: <span class="timeago" datetime="1592272417000" locale="en"></span>
 </small>
 </div>
 </article>
