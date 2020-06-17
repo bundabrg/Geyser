@@ -181,6 +181,11 @@
 </ul>
 </nav>
 </li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#logging">
+    Logging
+  </a>
+</li>
 </ul>
 </nav>
 </li>
@@ -243,6 +248,11 @@
 </li>
 </ul>
 </nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#logging">
+    Logging
+  </a>
 </li>
 </ul>
 </nav>
@@ -386,11 +396,25 @@ this can be found <a href="https://www.spigotmc.org/wiki/bukkit-bungee-plugin-me
 <span class="p">}</span>
 </code></pre></div>
 </div>
+<h2 id="logging">Logging<a class="headerlink" href="#logging" title="Permanent link">¶</a></h2>
+<p>Plugin classes use their <code>getLogger()</code> to retrieve a logging interface. This will log messages to the regular log
+with the plugin name prefixed in the messages.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Plugin</span><span class="p">(...)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyPlugin</span> <span class="kd">extends</span> <span class="n">GeyserPlugin</span> <span class="p">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">myMethod</span><span class="p">()</span> <span class="p">{</span>
+        <span class="p">...</span>
+        <span class="n">getLogger</span><span class="p">().</span><span class="na">info</span><span class="p">(</span><span class="s">"This is an informative message!"</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
 <hr/>
 <div class="md-source-date">
 <small>
     
-      Last update: <span class="timeago" datetime="1592367494000" locale="en"></span>
+      Last update: <span class="timeago" datetime="1592371208000" locale="en"></span>
 </small>
 </div>
 </article>
