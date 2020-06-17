@@ -360,7 +360,16 @@ in turn based upon their priority.</p>
 <div class="highlight"><pre><span></span><code><span class="n">eventManager</span><span class="p">.</span><span class="na">triggerEvent</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCustomEvent</span><span class="p">());</span>
 </code></pre></div>
 </div>
-<p>This returns an EventResult which can be used to chain additional commands based upon the result.</p>
+<p>This returns an EventResult which can be used to chain additional commands based upon the result. They include <code>ifNotCancelled</code> and 
+<code>ifCancelled</code>.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code><span class="n">eventManager</span><span class="p">.</span><span class="na">triggerEvent</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCustomEvent</span><span class="p">())</span>
+    <span class="p">.</span><span class="na">ifNotCancelled</span><span class="p">((</span><span class="n">result</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">{</span>
+        <span class="c1">// Code executed if events were not cancelled</span>
+    <span class="p">});</span>
+</code></pre></div>
+</div>
 <h2 id="listening-to-an-event">Listening to an Event<a class="headerlink" href="#listening-to-an-event" title="Permanent link">¶</a></h2>
 <p>There are two ways to listen for an event. One can either create an event handler method or one can create an anonymous
 lamda to be executed when the event is triggered.</p>
@@ -408,6 +417,18 @@ method listeners.</p>
 <p>Plugins should use the <code>on</code> method inherited from <code>GeyserPlugin</code>.</p>
 </div>
 <p>This method takes 2 optional parameters specifying the priority of the event and if the handler should ignore cancelled events.</p>
+<p>This returns an <code>EventRegisterResult</code> that allows one to chain a delay on, normally to used to cancel the handler. It is safe to cancel
+an already cancelled handler.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code><span class="n">GeyserConnector</span><span class="p">.</span><span class="na">getInstance</span><span class="p">().</span><span class="na">getEventManager</span><span class="p">().</span><span class="na">on</span><span class="p">(</span><span class="n">MyCustomEvent</span><span class="p">.</span><span class="na">class</span><span class="p">,</span> <span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">{</span>
+    <span class="n">System</span><span class="p">.</span><span class="na">err</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"If this doesn't trigger in 10 seconds it is cancelled"</span><span class="p">);</span>
+    <span class="n">ctx</span><span class="p">.</span><span class="na">unregister</span><span class="p">();</span>
+<span class="p">}).</span><span class="na">onDelay</span><span class="p">((</span><span class="n">ctx</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">{</span>
+    <span class="n">ctx</span><span class="p">.</span><span class="na">unregister</span><span class="p">();</span>
+<span class="p">},</span> <span class="mi">10</span><span class="p">,</span> <span class="n">TimeUnit</span><span class="p">.</span><span class="na">SECONDS</span><span class="p">);</span>
+</code></pre></div>
+</div>
 <h3 id="event-context">Event Context<a class="headerlink" href="#event-context" title="Permanent link">¶</a></h3>
 <p>The event handler receives an EventContext in addition to the Event class. The EventContext holds anything related to the
 EventHandler itself and presently only allows an EventHandler to <code>unregister</code> itself.</p>
@@ -582,7 +603,7 @@ EventHandler itself and presently only allows an EventHandler to <code>unregiste
 <div class="md-source-date">
 <small>
     
-      Last update: <span class="timeago" datetime="1592311123000" locale="en"></span>
+      Last update: <span class="timeago" datetime="1592357515000" locale="en"></span>
 </small>
 </div>
 </article>
