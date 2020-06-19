@@ -376,7 +376,7 @@ with the event manager.</p>
 <div class="highlight"><pre><span></span><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyClass</span> <span class="p">{</span>
 
     <span class="nd">@Event</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onEnable</span><span class="p">(</span><span class="n">EventContext</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">MyCustomEvent</span> <span class="n">event</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onEnable</span><span class="p">(</span><span class="n">MyCustomEvent</span> <span class="n">event</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">System</span><span class="p">.</span><span class="na">err</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"Hello World"</span><span class="p">);</span>
     <span class="p">}</span>
 <span class="p">}</span>
@@ -397,7 +397,7 @@ with the event manager.</p>
 <li><strong>filter</strong> - <code>List&lt;Class&lt;?&gt;&gt;</code>. Default {}. If set will only execute the event handler if the passed in filter to <code>triggerEvent</code> 
 is null or matches any on this list.</li>
 </ul>
-<p>The <code>EventContext</code> will be discussed later. <code>MyCustomEvent</code> is the event defined previously.</p>
+<p><code>MyCustomEvent</code> is the event defined previously.</p>
 <h3 id="anonymous-lambda">Anonymous Lambda<a class="headerlink" href="#anonymous-lambda" title="Permanent link">¶</a></h3>
 <p>An event can be hooked through the <code>on</code> method of the EventManager provided with an anonymous function. This allows
 code to be placed logically close to where it is related in the code instead of having to set up a separate class and
@@ -674,7 +674,7 @@ every Upstream packet will trigger this handler.</p>
 <div class="md-source-date">
 <small>
     
-      Last update: <span class="timeago" datetime="1592537909000" locale="en"></span>
+      Last update: <span class="timeago" datetime="1592538722000" locale="en"></span>
 </small>
 </div>
 </article>
