@@ -82,6 +82,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Getter
@@ -190,7 +191,7 @@ public class GeyserSession implements CommandSender {
     private long lastHitTime;
 
     private MinecraftProtocol protocol;
-    
+
     public GeyserSession(GeyserConnector connector, BedrockServerSession bedrockServerSession) {
         this.connector = connector;
         this.upstream = new UpstreamSession(bedrockServerSession);
@@ -216,17 +217,19 @@ public class GeyserSession implements CommandSender {
         startGame();
         this.remoteServer = remoteServer;
 
-        ChunkUtils.sendEmptyChunks(this, playerEntity.getPosition().toInt(), 0, false);
+        // These packets are sent a bit later to ensure the StartGame packet is processed first
+        connector.getGeneralThreadPool().schedule(() -> {
+            ChunkUtils.sendEmptyChunks(this, playerEntity.getPosition().toInt(), 0, false);
 
-        BiomeDefinitionListPacket biomeDefinitionListPacket = new BiomeDefinitionListPacket();
-        biomeDefinitionListPacket.setTag(BiomeTranslator.BIOMES);
-        upstream.sendPacket(biomeDefinitionListPacket);
+            BiomeDefinitionListPacket biomeDefinitionListPacket = new BiomeDefinitionListPacket();
+            biomeDefinitionListPacket.setTag(BiomeTranslator.BIOMES);
+            upstream.sendPacket(biomeDefinitionListPacket);
 
-        AvailableEntityIdentifiersPacket entityPacket = new AvailableEntityIdentifiersPacket();
-        entityPacket.setTag(EntityIdentifierRegistry.ENTITY_IDENTIFIERS);
-        upstream.sendPacket(entityPacket);
+            AvailableEntityIdentifiersPacket entityPacket = new AvailableEntityIdentifiersPacket();
+            entityPacket.setTag(EntityIdentifierRegistry.ENTITY_IDENTIFIERS);
+            upstream.sendPacket(entityPacket);
 
-        if (SHIM != null) {
+            if (SHIM != null) {
             SHIM.creativeContent(this);
         } else {
             CreativeContentPacket creativePacket = new CreativeContentPacket();
@@ -236,18 +239,19 @@ public class GeyserSession implements CommandSender {
             upstream.sendPacket(creativePacket);
         }
 
-        PlayStatusPacket playStatusPacket = new PlayStatusPacket();
-        playStatusPacket.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
-        upstream.sendPacket(playStatusPacket);
+            PlayStatusPacket playStatusPacket = new PlayStatusPacket();
+            playStatusPacket.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
+            upstream.sendPacket(playStatusPacket);
 
-        UpdateAttributesPacket attributesPacket = new UpdateAttributesPacket();
-        attributesPacket.setRuntimeEntityId(getPlayerEntity().getGeyserId());
-        List<AttributeData> attributes = new ArrayList<>();
-        // Default move speed
-        // Bedrock clients move very fast by default until they get an attribute packet correcting the speed
-        attributes.add(new AttributeData("minecraft:movement", 0.0f, 1024f, 0.1f, 0.1f));
-        attributesPacket.setAttributes(attributes);
-        upstream.sendPacket(attributesPacket);
+            UpdateAttributesPacket attributesPacket = new UpdateAttributesPacket();
+            attributesPacket.setRuntimeEntityId(getPlayerEntity().getGeyserId());
+            List<AttributeData> attributes = new ArrayList<>();
+            // Default move speed
+            // Bedrock clients move very fast by default until they get an attribute packet correcting the speed
+            attributes.add(new AttributeData("minecraft:movement", 0.0f, 1024f, 0.1f, 0.1f));
+            attributesPacket.setAttributes(attributes);
+            upstream.sendPacket(attributesPacket);
+        }, 500, TimeUnit.MILLISECONDS);
     }
 
     public void login() {
@@ -538,7 +542,7 @@ public class GeyserSession implements CommandSender {
         startGamePacket.setItemEntries(ItemRegistry.ITEMS);
         startGamePacket.setVanillaVersion("*");
         // startGamePacket.setMovementServerAuthoritative(true);
-        upstream.sendPacket(startGamePacket);
+        upstream.sendPacketImmediately(startGamePacket);
     }
 
     public boolean confirmTeleport(Vector3d position) {
