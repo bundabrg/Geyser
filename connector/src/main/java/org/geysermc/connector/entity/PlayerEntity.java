@@ -56,6 +56,7 @@ public class PlayerEntity extends LivingEntity {
     private GameProfile profile;
     private UUID uuid;
     private String username;
+    private String displayName;
     private long lastSkinUpdate = -1;
     private boolean playerList = true;
     private final EntityEffectCache effectCache;
@@ -292,5 +293,13 @@ public class PlayerEntity extends LivingEntity {
                 }
             }
         }
+    }
+
+    /**
+     * Returns the DisplayName if set, otherwise the Username
+     * @return Name of player entity
+     */
+    public String getName() {
+        return displayName == null ? username : displayName;
     }
 }
