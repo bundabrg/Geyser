@@ -72,6 +72,8 @@ public interface GeyserConfiguration {
 
     boolean isCacheChunks();
 
+    boolean isAllowCustomSkulls();
+
     int getCacheImages();
 
     IMetricsInfo getMetrics();
