@@ -230,14 +230,14 @@ public class GeyserSession implements CommandSender {
             upstream.sendPacket(entityPacket);
 
             if (SHIM != null) {
-            SHIM.creativeContent(this);
-        } else {
-            CreativeContentPacket creativePacket = new CreativeContentPacket();
-            for (int i = 0; i < ItemRegistry.CREATIVE_ITEMS.length; i++) {
-                creativePacket.getEntries().put(i + 1, ItemRegistry.CREATIVE_ITEMS[i]);
+                SHIM.creativeContent(this);
+            } else {
+                CreativeContentPacket creativePacket = new CreativeContentPacket();
+                for (int i = 0; i < ItemRegistry.CREATIVE_ITEMS.length; i++) {
+                    creativePacket.getEntries().put(i + 1, ItemRegistry.CREATIVE_ITEMS[i]);
+                }
+                upstream.sendPacket(creativePacket);
             }
-            upstream.sendPacket(creativePacket);
-        }
 
             PlayStatusPacket playStatusPacket = new PlayStatusPacket();
             playStatusPacket.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
