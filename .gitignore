@@ -227,6 +227,7 @@ config.yml
 logs/
 public-key.pem
 locales/
+cache/
 tokens.yml
 
 ## Ignore old mappings folder
