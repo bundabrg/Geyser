@@ -35,6 +35,7 @@ import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode;
 import com.github.steveice10.mc.protocol.data.game.window.VillagerTrade;
 import com.github.steveice10.mc.protocol.data.message.MessageSerializer;
 import com.github.steveice10.mc.protocol.packet.handshake.client.HandshakePacket;
+import com.github.steveice10.mc.protocol.packet.ingame.client.ClientPluginMessagePacket;
 import com.github.steveice10.mc.protocol.packet.ingame.client.world.ClientTeleportConfirmPacket;
 import com.github.steveice10.mc.protocol.packet.ingame.server.ServerRespawnPacket;
 import com.github.steveice10.mc.protocol.packet.login.server.LoginSuccessPacket;
@@ -61,6 +62,10 @@ import org.geysermc.connector.command.CommandSender;
 import org.geysermc.connector.common.AuthType;
 import org.geysermc.connector.entity.Entity;
 import org.geysermc.connector.entity.PlayerEntity;
+import org.geysermc.connector.event.events.DownstreamPacketReceiveEvent;
+import org.geysermc.connector.event.events.DownstreamPacketSendEvent;
+import org.geysermc.connector.event.events.UpstreamPacketSendEvent;
+import org.geysermc.connector.entity.attribute.AttributeType;
 import org.geysermc.connector.inventory.PlayerInventory;
 import org.geysermc.connector.network.remote.RemoteServer;
 import org.geysermc.connector.network.session.auth.AuthData;
@@ -359,6 +364,13 @@ public class GeyserSession implements CommandSender {
 
                         // Download and load the language for the player
                         LocaleUtils.downloadAndLoadLocale(locale);
+
+                        // Register plugin channels
+                        connector.getGeneralThreadPool().schedule(() -> {
+                            for (String channel : getConnector().getRegisteredPluginChannels()) {
+                                registerPluginChannel(channel);
+                            }
+                        }, 1, TimeUnit.SECONDS);
                     }
 
                     @Override
@@ -382,7 +394,10 @@ public class GeyserSession implements CommandSender {
                                 lastDimPacket = event.getPacket();
                                 return;
                             } else if (lastDimPacket != null) {
-                                PacketTranslatorRegistry.JAVA_TRANSLATOR.translate(lastDimPacket.getClass(), lastDimPacket, GeyserSession.this);
+                                connector.getEventManager().triggerEvent(new DownstreamPacketReceiveEvent<>(GeyserSession.this, event.getPacket()), event.getPacket().getClass())
+                                        .onNotCancelled((result) -> {
+                                            PacketTranslatorRegistry.JAVA_TRANSLATOR.translate(lastDimPacket.getClass(), lastDimPacket, GeyserSession.this);
+                                        });
                                 lastDimPacket = null;
                             }
 
@@ -397,8 +412,10 @@ public class GeyserSession implements CommandSender {
                                     SkinUtils.handleBedrockSkin(playerEntity, clientData);
                                 }
                             }
-
-                            PacketTranslatorRegistry.JAVA_TRANSLATOR.translate(event.getPacket().getClass(), event.getPacket(), GeyserSession.this);
+                            connector.getEventManager().triggerEvent(new DownstreamPacketReceiveEvent<>(GeyserSession.this, event.getPacket()), event.getPacket().getClass())
+                                    .onNotCancelled((result) -> {
+                                        PacketTranslatorRegistry.JAVA_TRANSLATOR.translate(event.getPacket().getClass(), event.getPacket(), GeyserSession.this);
+                                    });
                         }
                     }
 
@@ -570,11 +587,14 @@ public class GeyserSession implements CommandSender {
      * @param packet the bedrock packet from the NukkitX protocol lib
      */
     public void sendUpstreamPacket(BedrockPacket packet) {
-        if (upstream != null && !upstream.isClosed()) {
-            upstream.sendPacket(packet);
-        } else {
-            connector.getLogger().debug("Tried to send upstream packet " + packet.getClass().getSimpleName() + " but the session was null");
-        }
+        connector.getEventManager().triggerEvent(new UpstreamPacketSendEvent<>(this, packet), packet.getClass())
+                .onNotCancelled((result) -> {
+                    if (upstream != null && !upstream.isClosed()) {
+                        upstream.sendPacket(packet);
+                    } else {
+                        connector.getLogger().debug("Tried to send upstream packet " + packet.getClass().getSimpleName() + " but the session was null");
+                    }
+                });
     }
 
     /**
@@ -583,11 +603,14 @@ public class GeyserSession implements CommandSender {
      * @param packet the bedrock packet from the NukkitX protocol lib
      */
     public void sendUpstreamPacketImmediately(BedrockPacket packet) {
-        if (upstream != null && !upstream.isClosed()) {
-            upstream.sendPacketImmediately(packet);
-        } else {
-            connector.getLogger().debug("Tried to send upstream packet " + packet.getClass().getSimpleName() + " immediately but the session was null");
-        }
+        connector.getEventManager().triggerEvent(new UpstreamPacketSendEvent(this, packet), packet.getClass())
+                .onNotCancelled((result) -> {
+                    if (upstream != null && !upstream.isClosed()) {
+                        upstream.sendPacketImmediately(packet);
+                    } else {
+                        connector.getLogger().debug("Tried to send upstream packet " + packet.getClass().getSimpleName() + " immediately but the session was null");
+                    }
+                });
     }
 
     /**
@@ -596,11 +619,35 @@ public class GeyserSession implements CommandSender {
      * @param packet the java edition packet from MCProtocolLib
      */
     public void sendDownstreamPacket(Packet packet) {
-        if (downstream != null && downstream.getSession() != null && protocol.getSubProtocol().equals(SubProtocol.GAME)) {
-            downstream.getSession().send(packet);
-        } else {
-            connector.getLogger().debug("Tried to send downstream packet " + packet.getClass().getSimpleName() + " before connected to the server");
-        }
+        connector.getEventManager().triggerEvent(new DownstreamPacketSendEvent<>(this, packet), packet.getClass())
+                .onNotCancelled((result) -> {
+                    if (downstream != null && downstream.getSession() != null && protocol.getSubProtocol().equals(SubProtocol.GAME)) {
+                        downstream.getSession().send(packet);
+                    } else {
+                        connector.getLogger().debug("Tried to send downstream packet " + packet.getClass().getSimpleName() + " before connected to the server");
+                    }
+                });
+    }
+
+    /**
+     * Send message on a Plugin Channel - https://www.spigotmc.org/wiki/bukkit-bungee-plugin-messaging-channel
+     */
+    public void sendPluginMessage(String channel, byte[] data) {
+        sendDownstreamPacket(new ClientPluginMessagePacket(channel, data));
+    }
+
+    /**
+     * Register a Plugin Channel
+     */
+    public void registerPluginChannel(String channel) {
+        sendDownstreamPacket(new ClientPluginMessagePacket("minecraft:register", channel.getBytes()));
+    }
+
+    /**
+     * Unregister a Plugin Channel
+     */
+    public void unregisterPluginChannel(String channel) {
+        sendDownstreamPacket(new ClientPluginMessagePacket("minecraft:unregister", channel.getBytes()));
     }
 
     // -- Shims -- //

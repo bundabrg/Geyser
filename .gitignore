@@ -229,6 +229,7 @@ public-key.pem
 locales/
 cache/
 tokens.yml
+plugins/
 
 ## Ignore old mappings folder
 connector/src/main/resources/mappings

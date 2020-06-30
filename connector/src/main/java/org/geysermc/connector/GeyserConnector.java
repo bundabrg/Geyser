@@ -37,6 +37,7 @@ import org.geysermc.connector.common.AuthType;
 import org.geysermc.connector.common.PlatformType;
 import org.geysermc.connector.bootstrap.GeyserBootstrap;
 import org.geysermc.connector.command.CommandManager;
+import org.geysermc.connector.event.EventManager;
 import org.geysermc.connector.configuration.GeyserConfiguration;
 import org.geysermc.connector.metrics.Metrics;
 import org.geysermc.connector.network.ConnectorServerEventHandler;
@@ -48,14 +49,21 @@ import org.geysermc.connector.network.translators.sound.SoundRegistry;
 import org.geysermc.connector.network.translators.world.WorldManager;
 import org.geysermc.connector.network.translators.world.block.BlockTranslator;
 import org.geysermc.connector.network.translators.effect.EffectRegistry;
+import org.geysermc.connector.network.translators.world.block.entity.BlockEntityTranslator;
+import org.geysermc.connector.plugin.PluginManager;
+import org.geysermc.connector.event.events.GeyserStopEvent;
+import org.geysermc.connector.event.events.GeyserStartEvent;
 import org.geysermc.connector.utils.DimensionUtils;
 import org.geysermc.connector.utils.DockerCheck;
 import org.geysermc.connector.utils.LocaleUtils;
 import org.geysermc.connector.utils.SkinProvider;
 
+import java.io.File;
 import java.net.InetSocketAddress;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -93,6 +101,11 @@ public class GeyserConnector {
 
     private GeyserEdition edition;
 
+    private final EventManager eventManager;
+    private final PluginManager pluginManager;
+
+    private final List<String> registeredPluginChannels = new ArrayList<>();
+
     private Metrics metrics;
 
     private GeyserConnector(PlatformType platformType, GeyserBootstrap bootstrap) throws GeyserConnectorException {
@@ -101,6 +114,8 @@ public class GeyserConnector {
         instance = this;
 
         this.bootstrap = bootstrap;
+        this.eventManager = new EventManager(this);
+        this.pluginManager = new PluginManager(this, bootstrap.getConfigFolder().resolve("plugins").toFile());
 
         logger = bootstrap.getGeyserLogger();
         config = bootstrap.getGeyserConfig();
@@ -166,6 +181,12 @@ public class GeyserConnector {
             metrics.addCustomChart(new Metrics.SimplePie("edition", () -> config.getBedrock().getEdition()));
         }
 
+        // Enable Plugins
+        pluginManager.enablePlugins();
+
+        // Trigger GeyserStart Events
+        eventManager.triggerEvent(new GeyserStartEvent());
+
         double completeTime = (System.currentTimeMillis() - startupTime) / 1000D;
         logger.info(String.format("Done (%ss)! Run /geyser help for help!", new DecimalFormat("#.###").format(completeTime)));
     }
@@ -173,6 +194,12 @@ public class GeyserConnector {
     public void shutdown() {
         bootstrap.getGeyserLogger().info("Shutting down Geyser.");
         shuttingDown = true;
+
+        // Trigger GeyserStop Events
+        eventManager.triggerEvent(new GeyserStopEvent());
+
+        // Disable Plugins
+        pluginManager.disablePlugins();
 
         if (players.size() >= 1) {
             bootstrap.getGeyserLogger().info("Kicking " + players.size() + " player(s)");
@@ -249,6 +276,40 @@ public class GeyserConnector {
 
     public WorldManager getWorldManager() {
         return bootstrap.getWorldManager();
+    }
+
+    /**
+     * Register a Plugin Channel
+     *
+     * This will maintain what channels are registered and ensure new connections and existing connections
+     * are registered correctly
+     */
+    public void registerPluginChannel(String channel) {
+        if (registeredPluginChannels.contains(channel)) {
+            return;
+        }
+
+        registeredPluginChannels.add(channel);
+        for ( GeyserSession session : getPlayers().values()) {
+            session.registerPluginChannel(channel);
+        }
+    }
+
+    /**
+     * Unregister a Plugin Channel
+     *
+     * This will maintain what channels are registered and ensure new connections and existing connections
+     * are registered correctly
+     */
+    public void unregisterPluginChannel(String channel) {
+        if (!registeredPluginChannels.contains(channel)) {
+            return;
+        }
+
+        registeredPluginChannels.remove(channel);
+        for ( GeyserSession session : getPlayers().values()) {
+            session.unregisterPluginChannel(channel);
+        }
     }
 
     public static GeyserConnector getInstance() {
