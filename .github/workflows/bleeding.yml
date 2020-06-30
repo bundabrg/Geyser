@@ -50,6 +50,7 @@ jobs:
 
       - name: Build with Maven
         run: |
+          git submodule update --init --recursive
           mkdir -p build/output
           mvn -B package --file pom.xml && \
             cp bootstrap/*/target/Geyser*.jar build/output/
