@@ -31,9 +31,11 @@ import org.geysermc.connector.GeyserConnector;
 import org.geysermc.connector.GeyserEdition;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Paths;
 import java.util.function.Function;
 
 public class FileUtils {
@@ -135,6 +137,12 @@ public class FileUtils {
      */
     public static InputStream getResource(String resource) {
         String resourceName = GeyserEdition.INSTANCE.getEdition() + "/" + resource;
+
+        // First try open file under a resources folder. We use this try format so we don't close it
+        try {
+            return new FileInputStream(Paths.get("resources", resourceName).toFile());
+        } catch (IOException ignored) { }
+
         InputStream stream = FileUtils.class.getClassLoader().getResourceAsStream(resourceName);
         if (stream == null) {
             throw new AssertionError("Unable to find resource: " + resourceName);
