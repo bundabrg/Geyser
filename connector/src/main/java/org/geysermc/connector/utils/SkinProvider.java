@@ -106,7 +106,7 @@ public class SkinProvider {
         EARS_GEOMETRY_SLIM = earsDataBuilder.toString();
 
         /* Load in the custom skull geometry */
-        InputStream skullStream = FileUtils.getResource("bedrock/skin/geometry.humanoid.customskull.json");
+        InputStream skullStream = FileUtils.getResource("skin/geometry.humanoid.customskull.json");
 
         StringBuilder skullDataBuilder = new StringBuilder();
         try (Reader reader = new BufferedReader(new InputStreamReader(skullStream, Charset.forName(StandardCharsets.UTF_8.name())))) {
@@ -119,7 +119,6 @@ public class SkinProvider {
         }
 
         SKULL_GEOMETRY = new SkinGeometry("{\"geometry\" :{\"default\" :\"geometry.humanoid.customskull" + "\"}}", skullDataBuilder.toString(), false);
-    }
 
         // Schedule Daily Image Expiry if we are caching them
         if (GeyserConnector.getInstance().getConfig().getCacheImages() > 0) {

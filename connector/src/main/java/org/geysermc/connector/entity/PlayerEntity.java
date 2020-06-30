@@ -46,6 +46,7 @@ import org.geysermc.connector.utils.MessageUtils;
 import org.geysermc.connector.network.session.cache.EntityEffectCache;
 import org.geysermc.connector.utils.SkinProvider;
 import org.geysermc.connector.network.session.cache.EntityEffectCache;
+import org.geysermc.connector.utils.SkinUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,7 +121,7 @@ public class PlayerEntity extends LivingEntity {
     public void addPlayerList(GeyserSession session) {
         PlayerListPacket addPlayerListPacket = new PlayerListPacket();
         addPlayerListPacket.setAction(PlayerListPacket.Action.ADD);
-        addPlayerListPacket.getEntries().add(SkinUtils.buildCachedEntry(this));
+        addPlayerListPacket.getEntries().add(SkinUtils.buildCachedEntry(session, this));
         session.sendUpstreamPacket(addPlayerListPacket);
     }
 
@@ -130,7 +131,7 @@ public class PlayerEntity extends LivingEntity {
     public void removePlayerList(GeyserSession session) {
         PlayerListPacket removePlayerListPacket = new PlayerListPacket();
         removePlayerListPacket.setAction(PlayerListPacket.Action.REMOVE);
-        removePlayerListPacket.getEntries().add(SkinUtils.buildCachedEntry(this));
+        removePlayerListPacket.getEntries().add(SkinUtils.buildCachedEntry(session,this));
         session.sendUpstreamPacket(removePlayerListPacket);
     }
 

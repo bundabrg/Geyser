@@ -148,6 +148,8 @@ jobs:
             "$tag_name" << EOF
           Release $tag_name
 
+          NOTE: This is an unofficial build and includes bleeding edge features for testing.
+
           Since Last Release:
           $(git log $(git describe --tags --abbrev=0 HEAD^ 2> /dev/null || git rev-list --max-parents=0 HEAD)..HEAD --graph --pretty=format:'%h %d %s [%an]%n%b') | head -n 300
           EOF
