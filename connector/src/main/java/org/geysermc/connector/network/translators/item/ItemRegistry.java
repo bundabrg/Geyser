@@ -30,7 +30,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.nukkitx.nbt.NbtUtils;
-import com.nukkitx.protocol.bedrock.data.ItemData;
+import com.nukkitx.protocol.bedrock.data.inventory.ItemData;
 import com.nukkitx.protocol.bedrock.packet.StartGamePacket;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -54,7 +54,7 @@ public class ItemRegistry {
 
     private static final Map<String, ItemEntry> JAVA_IDENTIFIER_MAP = new HashMap<>();
 
-    public static final ItemData[] CREATIVE_ITEMS;
+    public static ItemData[] CREATIVE_ITEMS;
 
     public static final List<StartGamePacket.ItemEntry> ITEMS = new ArrayList<>();
     public static final Int2ObjectMap<ItemEntry> ITEM_ENTRIES = new Int2ObjectOpenHashMap<>();
@@ -67,12 +67,8 @@ public class ItemRegistry {
     public static int BARRIER_INDEX = 0;
 
     public static void init() {
-        // no-op
-    }
-
-    static {
         /* Load item palette */
-        InputStream stream = FileUtils.getResource("bedrock/items.json");
+        InputStream stream = FileUtils.getResource("data/items.json");
 
         TypeReference<List<JsonNode>> itemEntriesType = new TypeReference<List<JsonNode>>() {
         };
@@ -109,7 +105,7 @@ public class ItemRegistry {
                             entry.getValue().get("bedrock_data").intValue(),
                             entry.getValue().get("tool_type").textValue(),
                             entry.getValue().get("tool_tier").textValue(),
-                            entry.getValue().get("is_block").booleanValue()));
+                            entry.getValue().get("is_block") != null && entry.getValue().get("is_block").booleanValue()));
                 } else {
                     ITEM_ENTRIES.put(itemIndex, new ToolItemEntry(
                             entry.getKey(), itemIndex,
@@ -124,7 +120,7 @@ public class ItemRegistry {
                         entry.getKey(), itemIndex,
                         entry.getValue().get("bedrock_id").intValue(),
                         entry.getValue().get("bedrock_data").intValue(),
-                        entry.getValue().get("is_block").booleanValue()));
+                        entry.getValue().get("is_block") != null && entry.getValue().get("is_block").booleanValue()));
             }
             if (entry.getKey().equals("minecraft:barrier")) {
                 BARRIER_INDEX = itemIndex;
@@ -133,8 +129,11 @@ public class ItemRegistry {
             itemIndex++;
         }
 
+        // Add the loadstonecompass since it doesn't exist on java but we need it for item conversion
+        ITEM_ENTRIES.put(itemIndex, new ItemEntry("minecraft:lodestonecompass", itemIndex, 741, 0, false));
+
         /* Load creative items */
-        stream = FileUtils.getResource("bedrock/creative_items.json");
+        stream = FileUtils.getResource("data/creative_items.json");
 
         JsonNode creativeItemEntries;
         try {

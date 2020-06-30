@@ -35,10 +35,11 @@ import com.velocitypowered.api.plugin.Plugin;
 
 import com.velocitypowered.api.proxy.ProxyServer;
 import lombok.Getter;
-import org.geysermc.common.PlatformType;
+import org.geysermc.connector.common.PlatformType;
 import org.geysermc.connector.configuration.GeyserConfiguration;
 import org.geysermc.connector.GeyserConnector;
 import org.geysermc.connector.bootstrap.GeyserBootstrap;
+import org.geysermc.connector.dump.BootstrapDumpInfo;
 import org.geysermc.connector.ping.GeyserLegacyPingPassthrough;
 import org.geysermc.connector.ping.IGeyserPingPassthrough;
 import org.geysermc.connector.utils.FileUtils;
@@ -108,7 +109,12 @@ public class GeyserVelocityPlugin implements GeyserBootstrap {
 
         geyserConfig.loadFloodgate(this, proxyServer, configFolder.toFile());
 
-        this.connector = GeyserConnector.start(PlatformType.VELOCITY, this);
+        try {
+            this.connector = GeyserConnector.start(PlatformType.VELOCITY, this);
+        } catch (GeyserConnector.GeyserConnectorException e) {
+            logger.error(e.getMessage(), e.getCause());
+            return;
+        }
 
         this.geyserCommandManager = new GeyserVelocityCommandManager(connector);
         this.commandManager.register(new GeyserVelocityCommandExecutor(connector), "geyser");
@@ -152,5 +158,10 @@ public class GeyserVelocityPlugin implements GeyserBootstrap {
     @Subscribe
     public void onShutdown(ProxyShutdownEvent event) {
         onDisable();
+    }
+
+    @Override
+    public BootstrapDumpInfo getDumpInfo() {
+        return new GeyserVelocityDumpInfo(proxyServer);
     }
 }

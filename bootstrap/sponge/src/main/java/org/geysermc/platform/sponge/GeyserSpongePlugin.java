@@ -29,11 +29,12 @@ import com.google.inject.Inject;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
-import org.geysermc.common.PlatformType;
+import org.geysermc.connector.common.PlatformType;
 import org.geysermc.connector.configuration.GeyserConfiguration;
 import org.geysermc.connector.GeyserConnector;
 import org.geysermc.connector.bootstrap.GeyserBootstrap;
 import org.geysermc.connector.command.CommandManager;
+import org.geysermc.connector.dump.BootstrapDumpInfo;
 import org.geysermc.connector.ping.GeyserLegacyPingPassthrough;
 import org.geysermc.connector.ping.IGeyserPingPassthrough;
 import org.geysermc.connector.utils.FileUtils;
@@ -111,7 +112,12 @@ public class GeyserSpongePlugin implements GeyserBootstrap {
 
         this.geyserLogger = new GeyserSpongeLogger(logger, geyserConfig.isDebugMode());
         GeyserConfiguration.checkGeyserConfiguration(geyserConfig, geyserLogger);
-        this.connector = GeyserConnector.start(PlatformType.SPONGE, this);
+        try {
+            this.connector = GeyserConnector.start(PlatformType.SPONGE, this);
+        } catch (GeyserConnector.GeyserConnectorException e) {
+            logger.error(e.getMessage(), e.getCause());
+            return;
+        }
 
         if (geyserConfig.isLegacyPingPassthrough()) {
             this.geyserSpongePingPassthrough = GeyserLegacyPingPassthrough.init(connector);
@@ -161,5 +167,10 @@ public class GeyserSpongePlugin implements GeyserBootstrap {
     @Listener
     public void onServerStop(GameStoppedEvent event) {
         onDisable();
+    }
+
+    @Override
+    public BootstrapDumpInfo getDumpInfo() {
+        return new GeyserSpongeDumpInfo();
     }
 }

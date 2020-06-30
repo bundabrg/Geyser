@@ -25,8 +25,7 @@
 
 package org.geysermc.connector.network.translators.inventory;
 
-import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
-import com.nukkitx.protocol.bedrock.data.ContainerType;
+import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import org.geysermc.connector.inventory.Inventory;
 import org.geysermc.connector.network.session.GeyserSession;
 import org.geysermc.connector.network.translators.inventory.holder.BlockInventoryHolder;
@@ -34,26 +33,32 @@ import org.geysermc.connector.network.translators.inventory.holder.InventoryHold
 import org.geysermc.connector.network.translators.world.block.BlockTranslator;
 
 public class SingleChestInventoryTranslator extends ChestInventoryTranslator {
-    private final InventoryHolder holder;
+    private InventoryHolder holder;
 
     public SingleChestInventoryTranslator(int size) {
         super(size, 27);
-        BlockState javaBlockState = BlockTranslator.getJavaBlockState("minecraft:chest[facing=north,type=single,waterlogged=false]");
-        this.holder = new BlockInventoryHolder(BlockTranslator.getBedrockBlockId(javaBlockState), ContainerType.CONTAINER);
+    }
+
+    private InventoryHolder getHolder() {
+        if (holder ==  null) {
+            int javaBlockState = BlockTranslator.getJavaBlockState("minecraft:chest[facing=north,type=single,waterlogged=false]");
+            holder = new BlockInventoryHolder(BlockTranslator.getBedrockBlockId(javaBlockState), ContainerType.CONTAINER);
+        }
+        return holder;
     }
 
     @Override
     public void prepareInventory(GeyserSession session, Inventory inventory) {
-        holder.prepareInventory(this, session, inventory);
+        getHolder().prepareInventory(this, session, inventory);
     }
 
     @Override
     public void openInventory(GeyserSession session, Inventory inventory) {
-        holder.openInventory(this, session, inventory);
+        getHolder().openInventory(this, session, inventory);
     }
 
     @Override
     public void closeInventory(GeyserSession session, Inventory inventory) {
-        holder.closeInventory(this, session, inventory);
+        getHolder().closeInventory(this, session, inventory);
     }
 }

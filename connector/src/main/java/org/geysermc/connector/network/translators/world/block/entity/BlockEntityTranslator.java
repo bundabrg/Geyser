@@ -25,7 +25,6 @@
 
 package org.geysermc.connector.network.translators.world.block.entity;
 
-import com.github.steveice10.mc.protocol.data.game.world.block.BlockState;
 import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
 import com.github.steveice10.opennbt.tag.builtin.IntTag;
 import com.github.steveice10.opennbt.tag.builtin.StringTag;
@@ -33,9 +32,7 @@ import com.nukkitx.nbt.CompoundTagBuilder;
 import com.nukkitx.nbt.tag.Tag;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.geysermc.connector.GeyserConnector;
 import org.geysermc.connector.utils.BlockEntityUtils;
-import org.reflections.Reflections;
 
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +42,8 @@ public abstract class BlockEntityTranslator {
 
     public static final Map<String, BlockEntityTranslator> BLOCK_ENTITY_TRANSLATORS = new HashMap<>();
     public static ObjectArrayList<RequiresBlockState> REQUIRES_BLOCK_STATE_LIST = new ObjectArrayList<>();
+
+    public static Register REGISTER = new Register();
 
     /**
      * Contains a list of irregular block entity name translations that can't be fit into the regex
@@ -62,39 +61,27 @@ public abstract class BlockEntityTranslator {
     protected BlockEntityTranslator() {
     }
 
-    public static void init() {
-        // no-op
-    }
-
-    static {
-        Reflections ref = new Reflections("org.geysermc.connector.network.translators.world.block.entity");
-        for (Class<?> clazz : ref.getTypesAnnotatedWith(BlockEntity.class)) {
-            GeyserConnector.getInstance().getLogger().debug("Found annotated block entity: " + clazz.getCanonicalName());
-
-            try {
-                BLOCK_ENTITY_TRANSLATORS.put(clazz.getAnnotation(BlockEntity.class).name(), (BlockEntityTranslator) clazz.newInstance());
-            } catch (InstantiationException | IllegalAccessException e) {
-                GeyserConnector.getInstance().getLogger().error("Could not instantiate annotated block entity " + clazz.getCanonicalName() + ".");
+    public static class Register {
+        public Register blockEntityTranslator(Object translator) {
+            BlockEntity annotation = translator.getClass().getAnnotation(BlockEntity.class);
+            if (annotation != null) {
+                BLOCK_ENTITY_TRANSLATORS.put(annotation.name(), (BlockEntityTranslator) translator);
             }
-        }
-        for (Class<?> clazz : ref.getSubTypesOf(RequiresBlockState.class)) {
-            GeyserConnector.getInstance().getLogger().debug("Found block entity that requires block state: " + clazz.getCanonicalName());
 
-            try {
-                REQUIRES_BLOCK_STATE_LIST.add((RequiresBlockState) clazz.newInstance());
-            } catch (InstantiationException | IllegalAccessException e) {
-                GeyserConnector.getInstance().getLogger().error("Could not instantiate required block state " + clazz.getCanonicalName() + ".");
+            if (RequiresBlockState.class.isAssignableFrom(translator.getClass())) {
+                REQUIRES_BLOCK_STATE_LIST.add((RequiresBlockState) translator);
             }
+            return this;
         }
     }
 
-    public abstract List<Tag<?>> translateTag(CompoundTag tag, BlockState blockState);
+    public abstract List<Tag<?>> translateTag(CompoundTag tag, int blockState);
 
     public abstract CompoundTag getDefaultJavaTag(String javaId, int x, int y, int z);
 
     public abstract com.nukkitx.nbt.tag.CompoundTag getDefaultBedrockTag(String bedrockId, int x, int y, int z);
 
-    public com.nukkitx.nbt.tag.CompoundTag getBlockEntityTag(String id, CompoundTag tag, BlockState blockState) {
+    public com.nukkitx.nbt.tag.CompoundTag getBlockEntityTag(String id, CompoundTag tag, int blockState) {
         int x = Integer.parseInt(String.valueOf(tag.getValue().get("x").getValue()));
         int y = Integer.parseInt(String.valueOf(tag.getValue().get("y").getValue()));
         int z = Integer.parseInt(String.valueOf(tag.getValue().get("z").getValue()));

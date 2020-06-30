@@ -31,6 +31,8 @@ import org.geysermc.connector.inventory.Inventory;
 import org.geysermc.connector.network.session.GeyserSession;
 import org.geysermc.connector.network.translators.PacketTranslator;
 import org.geysermc.connector.network.translators.Translator;
+import org.geysermc.connector.network.translators.inventory.action.Execute;
+import org.geysermc.connector.network.translators.inventory.action.Transaction;
 import org.geysermc.connector.utils.InventoryUtils;
 
 @Translator(packet = ContainerClosePacket.class)
@@ -39,7 +41,7 @@ public class BedrockContainerCloseTranslator extends PacketTranslator<ContainerC
     @Override
     public void translate(ContainerClosePacket packet, GeyserSession session) {
         session.setLastWindowCloseTime(0);
-        byte windowId = packet.getWindowId();
+        byte windowId = packet.getId();
         Inventory openInventory = session.getInventoryCache().getOpenInventory();
         if (windowId == -1) { //player inventory or crafting table
             if (openInventory != null) {
@@ -49,10 +51,24 @@ public class BedrockContainerCloseTranslator extends PacketTranslator<ContainerC
             }
         }
 
-        if (windowId == 0 || (openInventory != null && openInventory.getId() == windowId)) {
-            ClientCloseWindowPacket closeWindowPacket = new ClientCloseWindowPacket(windowId);
-            session.getDownstream().getSession().send(closeWindowPacket);
-            InventoryUtils.closeInventory(session, windowId);
+        byte finalWindowId = windowId;
+        Runnable runnable = () -> {
+            if (finalWindowId == 0 || (openInventory != null && openInventory.getId() == finalWindowId)) {
+                ClientCloseWindowPacket closeWindowPacket = new ClientCloseWindowPacket(finalWindowId);
+                session.getDownstream().getSession().send(closeWindowPacket);
+                InventoryUtils.closeInventory(session, finalWindowId);
+            } else if (openInventory != null && openInventory.getId() != finalWindowId) {
+                InventoryUtils.openInventory(session, openInventory);
+            }
+        };
+
+        if (Transaction.CURRENT_TRANSACTION != null) {
+            Transaction.CURRENT_TRANSACTION.add(new Execute(runnable));
+        } else {
+            runnable.run();
         }
+
+        //Client wants close confirmation
+        session.sendUpstreamPacket(packet);
     }
 }

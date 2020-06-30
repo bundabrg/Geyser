@@ -29,11 +29,11 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nukkitx.protocol.bedrock.BedrockPacketCodec;
 import com.nukkitx.protocol.bedrock.BedrockServer;
-import com.nukkitx.protocol.bedrock.v390.Bedrock_v390;
+import com.nukkitx.protocol.bedrock.v407.Bedrock_v407;
 import lombok.Getter;
 import lombok.Setter;
-import org.geysermc.common.AuthType;
-import org.geysermc.common.PlatformType;
+import org.geysermc.connector.common.AuthType;
+import org.geysermc.connector.common.PlatformType;
 import org.geysermc.connector.bootstrap.GeyserBootstrap;
 import org.geysermc.connector.command.CommandManager;
 import org.geysermc.connector.configuration.GeyserConfiguration;
@@ -41,20 +41,16 @@ import org.geysermc.connector.metrics.Metrics;
 import org.geysermc.connector.network.ConnectorServerEventHandler;
 import org.geysermc.connector.network.remote.RemoteServer;
 import org.geysermc.connector.network.session.GeyserSession;
-import org.geysermc.connector.network.translators.BiomeTranslator;
 import org.geysermc.connector.network.translators.EntityIdentifierRegistry;
-import org.geysermc.connector.network.translators.PacketTranslatorRegistry;
 import org.geysermc.connector.network.translators.item.ItemRegistry;
-import org.geysermc.connector.network.translators.item.ItemTranslator;
-import org.geysermc.connector.network.translators.sound.SoundHandlerRegistry;
+import org.geysermc.connector.network.translators.sound.SoundRegistry;
 import org.geysermc.connector.network.translators.world.WorldManager;
 import org.geysermc.connector.network.translators.world.block.BlockTranslator;
 import org.geysermc.connector.network.translators.effect.EffectRegistry;
-import org.geysermc.connector.network.translators.world.block.entity.BlockEntityTranslator;
 import org.geysermc.connector.utils.DimensionUtils;
 import org.geysermc.connector.utils.DockerCheck;
 import org.geysermc.connector.utils.LocaleUtils;
-import org.geysermc.connector.network.translators.sound.SoundRegistry;
+import org.geysermc.connector.utils.SkinProvider;
 
 import java.net.InetSocketAddress;
 import java.text.DecimalFormat;
@@ -69,8 +65,6 @@ import java.util.concurrent.TimeUnit;
 public class GeyserConnector {
 
     public static final ObjectMapper JSON_MAPPER = new ObjectMapper().disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
-
-    public static final BedrockPacketCodec BEDROCK_PACKET_CODEC = Bedrock_v390.V390_CODEC;
 
     public static final String NAME = "Geyser";
     public static final String VERSION = "DEV"; // A fallback for running in IDEs
@@ -91,17 +85,22 @@ public class GeyserConnector {
     private PlatformType platformType;
     private GeyserBootstrap bootstrap;
 
+    private final GeyserLogger logger;
+    private final GeyserConfiguration config;
+
+    private GeyserEdition edition;
+
     private Metrics metrics;
 
-    private GeyserConnector(PlatformType platformType, GeyserBootstrap bootstrap) {
+    private GeyserConnector(PlatformType platformType, GeyserBootstrap bootstrap) throws GeyserConnectorException {
         long startupTime = System.currentTimeMillis();
 
         instance = this;
 
         this.bootstrap = bootstrap;
 
-        GeyserLogger logger = bootstrap.getGeyserLogger();
-        GeyserConfiguration config = bootstrap.getGeyserConfig();
+        logger = bootstrap.getGeyserLogger();
+        config = bootstrap.getGeyserConfig();
 
         this.platformType = platformType;
 
@@ -115,19 +114,24 @@ public class GeyserConnector {
 
         logger.setDebug(config.isDebugMode());
 
-        PacketTranslatorRegistry.init();
+        // Register Editions
+        GeyserEdition.registerEdition("bedrock", org.geysermc.connector.edition.mcpe.Edition.class);
+        GeyserEdition.registerEdition("education",  org.geysermc.connector.edition.mcee.Edition.class);
+
+        try {
+            this.edition = GeyserEdition.create(this, config.getBedrock().getEdition());
+        } catch (GeyserEdition.InvalidEditionException e) {
+            throw new GeyserConnectorException(e.getMessage(), e.getCause());
+        }
 
         /* Initialize translators and registries */
-        BiomeTranslator.init();
         BlockTranslator.init();
-        BlockEntityTranslator.init();
         EffectRegistry.init();
         EntityIdentifierRegistry.init();
         ItemRegistry.init();
-        ItemTranslator.init();
         LocaleUtils.init();
         SoundRegistry.init();
-        SoundHandlerRegistry.init();
+        SkinProvider.init();
 
         if (platformType != PlatformType.STANDALONE) {
             DockerCheck.check(bootstrap);
@@ -156,6 +160,7 @@ public class GeyserConnector {
             metrics.addCustomChart(new Metrics.SingleLineChart("players", players::size));
             metrics.addCustomChart(new Metrics.SimplePie("authMode", authType.name()::toLowerCase));
             metrics.addCustomChart(new Metrics.SimplePie("platform", platformType::getPlatformName));
+            metrics.addCustomChart(new Metrics.SimplePie("edition", () -> config.getBedrock().getEdition()));
         }
 
         double completeTime = (System.currentTimeMillis() - startupTime) / 1000D;
@@ -218,7 +223,7 @@ public class GeyserConnector {
         players.remove(player.getSocketAddress());
     }
 
-    public static GeyserConnector start(PlatformType platformType, GeyserBootstrap bootstrap) {
+    public static GeyserConnector start(PlatformType platformType, GeyserBootstrap bootstrap) throws GeyserConnectorException {
         return new GeyserConnector(platformType, bootstrap);
     }
 
@@ -245,5 +250,11 @@ public class GeyserConnector {
 
     public static GeyserConnector getInstance() {
         return instance;
+    }
+
+    public static class GeyserConnectorException extends Exception {
+        public GeyserConnectorException(String message, Throwable cause) {
+            super(message, cause);
+        }
     }
 }
