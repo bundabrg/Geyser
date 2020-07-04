@@ -18,8 +18,8 @@ jobs:
           server-username: MAVEN_USERNAME # env variable for username in deploy
           server-password: MAVEN_TOKEN # env variable for token in deploy
 
-      - name: Cache dependencies
-        uses: actions/cache@v1
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
