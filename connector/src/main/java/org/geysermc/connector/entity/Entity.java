@@ -148,7 +148,7 @@ public class Entity {
 
         for (long passenger : passengers) {
             Entity entity = session.getEntityCache().getEntityByJavaId(passenger);
-            entity.getMetadata().getFlags().setFlag(EntityFlag.RIDING, false);
+            entity.getMetadata().getOrCreateFlags().setFlag(EntityFlag.RIDING, false);
             entity.updateBedrockMetadata(session);
         }
 
