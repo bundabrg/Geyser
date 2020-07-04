@@ -44,11 +44,13 @@ import org.geysermc.connector.network.ConnectorServerEventHandler;
 import org.geysermc.connector.network.remote.RemoteServer;
 import org.geysermc.connector.network.session.GeyserSession;
 import org.geysermc.connector.network.translators.EntityIdentifierRegistry;
+import org.geysermc.connector.network.translators.PacketTranslatorRegistry;
+import org.geysermc.connector.network.translators.effect.EffectRegistry;
 import org.geysermc.connector.network.translators.item.ItemRegistry;
+import org.geysermc.connector.network.translators.sound.SoundRegistry;
 import org.geysermc.connector.network.translators.sound.SoundRegistry;
 import org.geysermc.connector.network.translators.world.WorldManager;
 import org.geysermc.connector.network.translators.world.block.BlockTranslator;
-import org.geysermc.connector.network.translators.effect.EffectRegistry;
 import org.geysermc.connector.network.translators.world.block.entity.BlockEntityTranslator;
 import org.geysermc.connector.plugin.PluginManager;
 import org.geysermc.connector.event.events.GeyserStopEvent;
@@ -187,8 +189,23 @@ public class GeyserConnector {
         // Trigger GeyserStart Events
         eventManager.triggerEvent(new GeyserStartEvent());
 
+        boolean isGui = false;
+        // This will check if we are in standalone and get the 'useGui' variable from there
+        if (platformType == PlatformType.STANDALONE) {
+            try {
+                Class<?> cls = Class.forName("org.geysermc.platform.standalone.GeyserStandaloneBootstrap");
+                isGui = (boolean) cls.getMethod("isUseGui").invoke(cls.cast(bootstrap));
+            } catch (Exception e) { e.printStackTrace(); }
+        }
+
         double completeTime = (System.currentTimeMillis() - startupTime) / 1000D;
-        logger.info(String.format("Done (%ss)! Run /geyser help for help!", new DecimalFormat("#.###").format(completeTime)));
+        String message = String.format("Done (%ss)!", new DecimalFormat("#.###").format(completeTime));
+        if (isGui) {
+            message += " Run Commands -> help for help!";
+        } else {
+            message += " Run /geyser help for help!";
+        }
+        logger.info(message);
     }
 
     public void shutdown() {
