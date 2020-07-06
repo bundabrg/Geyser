@@ -30,6 +30,8 @@ import com.github.steveice10.mc.protocol.data.game.entity.metadata.ItemStack;
 import com.github.steveice10.mc.protocol.packet.ingame.client.world.ClientVehicleMovePacket;
 import com.nukkitx.math.vector.Vector3f;
 import com.nukkitx.protocol.bedrock.data.entity.EntityFlag;
+import com.nukkitx.protocol.bedrock.packet.SetEntityMotionPacket;
+import lombok.Getter;
 import org.geysermc.connector.entity.type.EntityType;
 import org.geysermc.connector.entity.type.TemptedEntity;
 import org.geysermc.connector.network.session.GeyserSession;
@@ -38,7 +40,11 @@ import org.geysermc.connector.network.translators.item.ItemRegistry;
 import java.util.concurrent.TimeUnit;
 
 public class PigEntity extends AnimalEntity implements TemptedEntity {
+    @Getter
     private boolean tempted = false;
+    private State currentState = State.NORMAL;
+    private int stateCount = 0;
+    private Vector3f lastPosition;
 
 
     public PigEntity(long entityId, long geyserId, EntityType entityType, Vector3f position, Vector3f motion, Vector3f rotation) {
@@ -59,6 +65,23 @@ public class PigEntity extends AnimalEntity implements TemptedEntity {
         return 10f;
     }
 
+
+    @Override
+    public void moveRelative(GeyserSession session, double relX, double relY, double relZ, Vector3f rotation, boolean isOnGround) {
+        super.moveRelative(session, relX, relY, relZ, rotation, isOnGround);
+
+        if (!isTempted()) {
+            return;
+        }
+
+        if (relX == 0 && relY == 0 && relZ == 0 && rotation == this.rotation) {
+            System.err.println("I'm stuck!");
+        }
+        if (relY < -0.01) {
+            System.err.println("Falling");
+        }
+    }
+
     /**
      * Called when the rider has an equipment change
      * @param session GeyserSession
@@ -76,21 +99,39 @@ public class PigEntity extends AnimalEntity implements TemptedEntity {
             return;
         }
 
+        lastPosition = position;
         tempted = true;
+        stateCount = 0;
+        currentState = State.NORMAL;
         updateVehicle(session);
     }
 
     private void updateVehicle(GeyserSession session) {
-        if (!tempted)
+        if (!tempted || session.getRidingVehicleEntity() != this) {
+            tempted = false;
             return;
+        }
 
         Vector3f playerRotation = session.getPlayerEntity().getRotation();
+
+        // Try to move down as well
+        ClientVehicleMovePacket packet2 = new ClientVehicleMovePacket(
+                position.getX(),
+                position.getY() - 0.5,
+                position.getZ(),
+                playerRotation.getX(),
+                rotation.getY()
+        );
+        System.err.println(packet2);
+        session.sendDownstreamPacket(packet2);
+
+        // Move normally
         Vector3f playerVector = Vector3f.from(
                 Math.cos(Math.toRadians(playerRotation.getX()+90)),
                 0,
                 Math.sin(Math.toRadians(playerRotation.getX()+90))
         );
-        Vector3f movement = position.clone().add(playerVector.clone().mul(4.19f/20f)); // Pig Average speed: 4.19 blocks per second
+        Vector3f movement = position.clone().add(playerVector.clone().mul(4.19f/80f)); // Pig Average speed: 4.19 blocks per second
 
         ClientVehicleMovePacket packet = new ClientVehicleMovePacket(
                 movement.getX(),
@@ -99,7 +140,18 @@ public class PigEntity extends AnimalEntity implements TemptedEntity {
                 playerRotation.getX(),
                 rotation.getY()
         );
+
+        System.err.println(packet);
         session.sendDownstreamPacket(packet);
+
         session.getConnector().getGeneralThreadPool().schedule(() -> updateVehicle(session), 50, TimeUnit.MILLISECONDS); // Once per tick
+    }
+
+    public enum State {
+        NORMAL,
+        CHECK_DOWN,
+        CHECKING_DOWN,
+        FALLING,
+        CHECKING_UP
     }
 }

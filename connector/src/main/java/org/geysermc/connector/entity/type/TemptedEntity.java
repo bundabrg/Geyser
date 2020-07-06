@@ -36,4 +36,5 @@ public interface TemptedEntity {
      * When a rider changes their held equipment this is executed with the session
      */
     void riderEquipmentUpdated(GeyserSession session);
+    boolean isTempted();
 }

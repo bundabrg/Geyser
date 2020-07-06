@@ -26,6 +26,7 @@
 package org.geysermc.connector.network.translators.java.entity;
 
 import org.geysermc.connector.entity.Entity;
+import org.geysermc.connector.entity.type.TemptedEntity;
 import org.geysermc.connector.network.session.GeyserSession;
 import org.geysermc.connector.network.translators.PacketTranslator;
 import org.geysermc.connector.network.translators.Translator;
@@ -40,6 +41,9 @@ public class JavaEntityVelocityTranslator extends PacketTranslator<ServerEntityV
     @Override
     public void translate(ServerEntityVelocityPacket packet, GeyserSession session) {
         Entity entity = session.getEntityCache().getEntityByJavaId(packet.getEntityId());
+        if (entity instanceof TemptedEntity && ((TemptedEntity)entity).isTempted()) {
+            System.err.println(packet);
+        }
         if (packet.getEntityId() == session.getPlayerEntity().getEntityId()) {
             entity = session.getPlayerEntity();
         }
