@@ -306,14 +306,6 @@ public class PlayerEntity extends LivingEntity {
         }
     }
 
-    /**
-     * Returns the DisplayName if set, otherwise the Username
-     * @return Name of player entity
-     */
-    public String getName() {
-        return displayName == null ? username : displayName;
-    }
-
     @Override
     public void updateBedrockAttributes(GeyserSession session) { // TODO: Don't use duplicated code
         if (!valid) return;
@@ -330,5 +322,13 @@ public class PlayerEntity extends LivingEntity {
         updateAttributesPacket.setRuntimeEntityId(geyserId);
         updateAttributesPacket.setAttributes(attributes);
         session.sendUpstreamPacket(updateAttributesPacket);
+    }
+
+    /**
+     * Returns the DisplayName if set, otherwise the Username
+     * @return Name of player entity
+     */
+    public String getName() {
+        return displayName == null ? username : displayName;
     }
 }
