@@ -24,37 +24,25 @@
  *
  */
 
-package org.geysermc.connector.network.translators.world.block.entity;
+package org.geysermc.connector.network.translators.bedrock;
 
-import com.nukkitx.math.vector.Vector3i;
-import com.nukkitx.nbt.NbtMap;
+import com.nukkitx.protocol.bedrock.packet.EmotePacket;
+import org.geysermc.connector.GeyserConnector;
 import org.geysermc.connector.network.session.GeyserSession;
+import org.geysermc.connector.network.translators.PacketTranslator;
+import org.geysermc.connector.network.translators.Translator;
 
-/**
- * Implemented only if a block is a block entity in Bedrock and not Java Edition.
- */
-public interface BedrockOnlyBlockEntity {
+@Translator(packet = EmotePacket.class)
+public class BedrockEmoteTranslator extends PacketTranslator<EmotePacket> {
 
-    /**
-     * Update the block on Bedrock Edition.
-     * @param session GeyserSession.
-     * @param blockState The Java block state.
-     * @param position The Bedrock block position.
-     */
-    void updateBlock(GeyserSession session, int blockState, Vector3i position);
-
-    /**
-     * Get the tag of the Bedrock-only block entity
-     * @param position Bedrock position of block.
-     * @param blockState Java BlockState of block.
-     * @return Bedrock tag, or null if not a Bedrock-only Block Entity
-     */
-    static NbtMap getTag(Vector3i position, int blockState) {
-        if (new FlowerPotBlockEntityTranslator().isBlock(blockState)) {
-            return FlowerPotBlockEntityTranslator.getTag(blockState, position);
-        } else if (PistonBlockEntityTranslator.isBlock(blockState)) {
-            return PistonBlockEntityTranslator.getTag(blockState, position);
+    @Override
+    public void translate(EmotePacket packet, GeyserSession session) {
+        long javaId = session.getPlayerEntity().getEntityId();
+        for (GeyserSession otherSession : GeyserConnector.getInstance().getPlayers()) {
+            if (otherSession != session) {
+                packet.setRuntimeEntityId(otherSession.getEntityCache().getEntityByJavaId(javaId).getGeyserId());
+                otherSession.sendUpstreamPacket(packet);
+            }
         }
-        return null;
     }
 }
