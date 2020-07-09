@@ -63,7 +63,6 @@ import org.geysermc.connector.utils.DockerCheck;
 import org.geysermc.connector.utils.LocaleUtils;
 import org.geysermc.connector.utils.SkinProvider;
 
-import java.io.File;
 import java.net.InetSocketAddress;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -315,7 +314,7 @@ public class GeyserConnector {
         }
 
         registeredPluginChannels.add(channel);
-        for ( GeyserSession session : getPlayers().values()) {
+        for ( GeyserSession session : getPlayers()) {
             session.registerPluginChannel(channel);
         }
     }
@@ -332,7 +331,7 @@ public class GeyserConnector {
         }
 
         registeredPluginChannels.remove(channel);
-        for ( GeyserSession session : getPlayers().values()) {
+        for ( GeyserSession session : getPlayers()  ) {
             session.unregisterPluginChannel(channel);
         }
     }
