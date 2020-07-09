@@ -41,6 +41,8 @@ import org.geysermc.connector.network.translators.world.block.BlockStateValues;
 import org.geysermc.connector.utils.SkinProvider;
 import org.geysermc.connector.utils.SkinUtils;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.HashMap;
