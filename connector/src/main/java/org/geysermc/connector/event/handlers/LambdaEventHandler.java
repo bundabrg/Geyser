@@ -53,9 +53,6 @@ public class LambdaEventHandler<T extends GeyserEvent> extends EventHandler<T> {
         this.priority = priority;
         this.ignoreCancelled = ignoreCancelled;
         Collections.addAll(this.filter, filter);
-
-        // Register with event manager
-        manager.register(this);
     }
 
     @Override
@@ -102,6 +99,11 @@ public class LambdaEventHandler<T extends GeyserEvent> extends EventHandler<T> {
 
         public Builder<T> filter(Class<?>[] filter) {
             this.filter = filter;
+            return this;
+        }
+
+        public Builder<T> filter(Class<?> filter) {
+            this.filter = new Class<?>[]{filter};
             return this;
         }
 

@@ -28,6 +28,8 @@ package org.geysermc.connector.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.geysermc.connector.GeyserConnector;
+import org.geysermc.connector.event.EventManager;
+import org.geysermc.connector.event.events.geyser.ResourceReadEvent;
 import org.geysermc.connector.GeyserEdition;
 
 import java.io.File;
@@ -144,9 +146,12 @@ public class FileUtils {
         } catch (IOException ignored) { }
 
         InputStream stream = FileUtils.class.getClassLoader().getResourceAsStream(resourceName);
-        if (stream == null) {
+
+        ResourceReadEvent event = EventManager.getInstance().triggerEvent(new ResourceReadEvent(resource, stream)).getEvent();
+
+        if (event.getInputStream() == null) {
             throw new AssertionError(LanguageUtils.getLocaleStringLog("geyser.toolbox.fail.resource", resourceName));
         }
-        return stream;
+        return event.getInputStream();
     }
 }

@@ -24,14 +24,18 @@
  *
  */
 
-package org.geysermc.connector.event.events;
+package org.geysermc.connector.event.events.network;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.geysermc.connector.event.events.CancellableGeyserEvent;
+import org.geysermc.connector.network.remote.RemoteServer;
+import org.geysermc.connector.network.session.GeyserSession;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public abstract class CancellableGeyserEvent extends GeyserEvent {
-    private boolean cancelled = false;
+@AllArgsConstructor
+public class SessionConnectEvent extends CancellableGeyserEvent {
+    final GeyserSession session;
 }

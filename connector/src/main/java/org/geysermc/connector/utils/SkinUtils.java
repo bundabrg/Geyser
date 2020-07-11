@@ -38,6 +38,8 @@ import lombok.Getter;
 import org.geysermc.connector.common.AuthType;
 import org.geysermc.connector.GeyserConnector;
 import org.geysermc.connector.entity.PlayerEntity;
+import org.geysermc.connector.event.EventManager;
+import org.geysermc.connector.event.events.geyser.LoadBedrockSkinEvent;
 import org.geysermc.connector.network.session.GeyserSession;
 import org.geysermc.connector.network.session.auth.BedrockClientData;
 
@@ -301,6 +303,7 @@ public class SkinUtils {
             byte[] capeBytes = clientData.getCapeData();
 
             byte[] geometryNameBytes = Base64.getDecoder().decode(clientData.getGeometryName().getBytes("UTF-8"));
+            System.err.println(new String(geometryNameBytes));
             byte[] geometryBytes = Base64.getDecoder().decode(clientData.getGeometryData().getBytes("UTF-8"));
 
             if (skinBytes.length <= (128 * 128 * 4) && !clientData.isPersonaSkin()) {

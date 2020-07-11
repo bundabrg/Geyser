@@ -24,13 +24,25 @@
  *
  */
 
-package org.geysermc.connector.event.events;
+package org.geysermc.connector.event.events.packet;
+
+import com.nukkitx.protocol.bedrock.BedrockPacket;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.geysermc.connector.event.events.CancellableGeyserEvent;
+import org.geysermc.connector.network.session.GeyserSession;
 
 /**
- * EnableEvent is triggered for each plugin when enabling it
+ * Triggered each time a packet is received from the Downstream server.
  *
- * If the event is cancelled then the plugin will be unregistered from the EventManager and the DisableEvent will
- * not trigger
+ * If cancelled then regular processes of the packet will not proceed
  */
-public class GeyserStartEvent extends GeyserEvent {
+
+@EqualsAndHashCode(callSuper = true)
+@AllArgsConstructor
+@Data
+public class UpstreamPacketSendEvent<T extends BedrockPacket> extends CancellableGeyserEvent {
+    private GeyserSession session;
+    private T packet;
 }

@@ -24,18 +24,15 @@
  *
  */
 
-package org.geysermc.connector.event.events;
+package org.geysermc.connector.event.events.geyser;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.ToString;
-import org.geysermc.connector.network.session.GeyserSession;
+import org.geysermc.connector.event.events.GeyserEvent;
 
-@Getter
-@ToString
-@AllArgsConstructor
-public class PluginMessageEvent extends CancellableGeyserEvent {
-    private final GeyserSession session;
-    private final String channel;
-    private final byte[] data;
+/**
+ * EnableEvent is triggered for each plugin when enabling it
+ *
+ * If the event is cancelled then the plugin will be unregistered from the EventManager and the DisableEvent will
+ * not trigger
+ */
+public class GeyserStartEvent extends GeyserEvent {
 }

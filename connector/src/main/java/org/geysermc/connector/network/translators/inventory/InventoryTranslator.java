@@ -30,6 +30,8 @@ import com.nukkitx.protocol.bedrock.data.inventory.ContainerType;
 import com.nukkitx.protocol.bedrock.data.inventory.InventoryActionData;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
+import org.geysermc.connector.event.EventManager;
+import org.geysermc.connector.event.events.registry.InventoryTranslatorRegistryEvent;
 import org.geysermc.connector.inventory.Inventory;
 import org.geysermc.connector.network.session.GeyserSession;
 
@@ -40,7 +42,8 @@ import java.util.Map;
 @AllArgsConstructor
 public abstract class InventoryTranslator {
 
-    public static final Map<WindowType, InventoryTranslator> INVENTORY_TRANSLATORS = new HashMap<>();
+    public static final Map<WindowType, InventoryTranslator> INVENTORY_TRANSLATORS = EventManager.getInstance()
+            .triggerEvent(new InventoryTranslatorRegistryEvent(new HashMap<>();
 
     public static final Register REGISTER = new Register();
 

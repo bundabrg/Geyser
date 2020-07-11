@@ -63,9 +63,14 @@ import org.geysermc.connector.command.CommandSender;
 import org.geysermc.connector.common.AuthType;
 import org.geysermc.connector.entity.Entity;
 import org.geysermc.connector.entity.PlayerEntity;
-import org.geysermc.connector.event.events.DownstreamPacketReceiveEvent;
-import org.geysermc.connector.event.events.DownstreamPacketSendEvent;
-import org.geysermc.connector.event.events.UpstreamPacketSendEvent;
+import org.geysermc.connector.event.EventManager;
+import org.geysermc.connector.event.events.geyser.GeyserAuthenticationEvent;
+import org.geysermc.connector.event.events.geyser.GeyserLoginEvent;
+import org.geysermc.connector.event.events.network.SessionConnectEvent;
+import org.geysermc.connector.event.events.network.SessionDisconnectEvent;
+import org.geysermc.connector.event.events.packet.DownstreamPacketReceiveEvent;
+import org.geysermc.connector.event.events.packet.DownstreamPacketSendEvent;
+import org.geysermc.connector.event.events.packet.UpstreamPacketSendEvent;
 import org.geysermc.connector.inventory.PlayerInventory;
 import org.geysermc.connector.network.remote.RemoteServer;
 import org.geysermc.connector.network.session.auth.AuthData;
@@ -221,7 +226,13 @@ public class GeyserSession implements CommandSender {
 
         this.inventoryCache.getInventories().put(0, inventory);
 
+        if (EventManager.getInstance().triggerEvent(new SessionConnectEvent(this)).isCancelled()) {
+            disconnect("");
+        }
+
         bedrockServerSession.addDisconnectHandler(disconnectReason -> {
+            EventManager.getInstance().triggerEvent(new SessionDisconnectEvent(this));
+
             connector.getLogger().info(LanguageUtils.getLocaleStringLog("geyser.network.disconnect", bedrockServerSession.getAddress().getAddress(), disconnectReason));
 
             disconnect(disconnectReason.name());
@@ -239,11 +250,11 @@ public class GeyserSession implements CommandSender {
 
             BiomeDefinitionListPacket biomeDefinitionListPacket = new BiomeDefinitionListPacket();
             biomeDefinitionListPacket.setDefinitions(BiomeTranslator.BIOMES);
-            upstream.sendPacket(biomeDefinitionListPacket);
+            sendUpstreamPacket(biomeDefinitionListPacket);
 
             AvailableEntityIdentifiersPacket entityPacket = new AvailableEntityIdentifiersPacket();
             entityPacket.setIdentifiers(EntityIdentifierRegistry.ENTITY_IDENTIFIERS);
-            upstream.sendPacket(entityPacket);
+            sendUpstreamPacket(entityPacket);
 
             if (SHIM != null) {
                 SHIM.creativeContent(this);
@@ -252,12 +263,12 @@ public class GeyserSession implements CommandSender {
                 for (int i = 0; i < ItemRegistry.CREATIVE_ITEMS.length; i++) {
                     creativePacket.getEntries().put(i + 1, ItemRegistry.CREATIVE_ITEMS[i]);
                 }
-                upstream.sendPacket(creativePacket);
+                sendUpstreamPacket(creativePacket);
             }
 
             PlayStatusPacket playStatusPacket = new PlayStatusPacket();
             playStatusPacket.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
-            upstream.sendPacket(playStatusPacket);
+            sendUpstreamPacket(playStatusPacket);
 
             UpdateAttributesPacket attributesPacket = new UpdateAttributesPacket();
             attributesPacket.setRuntimeEntityId(getPlayerEntity().getGeyserId());
@@ -271,6 +282,10 @@ public class GeyserSession implements CommandSender {
     }
 
     public void login() {
+        if (EventManager.getInstance().triggerEvent(new GeyserLoginEvent(this)).isCancelled()) {
+            return;
+        }
+
         if (connector.getAuthType() != AuthType.ONLINE) {
             if (connector.getAuthType() == AuthType.OFFLINE) {
                 connector.getLogger().info(LanguageUtils.getLocaleStringLog("geyser.auth.login.offline"));
@@ -286,6 +301,10 @@ public class GeyserSession implements CommandSender {
     }
 
     public void authenticate(String username, String password) {
+        if (EventManager.getInstance().triggerEvent(new GeyserAuthenticationEvent(this, username, password)).isCancelled()) {
+            return;
+        }
+
         if (loggedIn) {
             connector.getLogger().severe(LanguageUtils.getLocaleStringLog("geyser.auth.already_loggedin", username));
             return;
@@ -490,7 +509,7 @@ public class GeyserSession implements CommandSender {
         textPacket.setNeedsTranslation(false);
         textPacket.setMessage(message);
 
-        upstream.sendPacket(textPacket);
+        sendUpstreamPacket(textPacket);
     }
 
     @Override
@@ -509,7 +528,7 @@ public class GeyserSession implements CommandSender {
 
         ChunkRadiusUpdatedPacket chunkRadiusUpdatedPacket = new ChunkRadiusUpdatedPacket();
         chunkRadiusUpdatedPacket.setRadius(renderDistance);
-        upstream.sendPacket(chunkRadiusUpdatedPacket);
+        sendUpstreamPacket(chunkRadiusUpdatedPacket);
     }
 
     public InetSocketAddress getSocketAddress() {
@@ -570,7 +589,7 @@ public class GeyserSession implements CommandSender {
         startGamePacket.setItemEntries(ItemRegistry.ITEMS);
         startGamePacket.setVanillaVersion("*");
         // startGamePacket.setMovementServerAuthoritative(true);
-        upstream.sendPacketImmediately(startGamePacket);
+        sendUpstreamPacket(startGamePacket);
     }
 
     public boolean confirmTeleport(Vector3d position) {
@@ -610,7 +629,7 @@ public class GeyserSession implements CommandSender {
      * @param packet the bedrock packet from the NukkitX protocol lib
      */
     public void sendUpstreamPacketImmediately(BedrockPacket packet) {
-        connector.getEventManager().triggerEvent(new UpstreamPacketSendEvent(this, packet), packet.getClass())
+        connector.getEventManager().triggerEvent(new UpstreamPacketSendEvent<>(this, packet), packet.getClass())
                 .onNotCancelled((result) -> {
                     if (upstream != null && !upstream.isClosed()) {
                         upstream.sendPacketImmediately(packet);

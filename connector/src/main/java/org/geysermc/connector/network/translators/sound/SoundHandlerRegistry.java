@@ -26,6 +26,8 @@
 
 package org.geysermc.connector.network.translators.sound;
 
+import org.geysermc.connector.event.EventManager;
+import org.geysermc.connector.event.events.registry.SoundHandlerRegistryEvent;
 import org.reflections.Reflections;
 
 import java.util.HashMap;

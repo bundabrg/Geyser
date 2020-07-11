@@ -41,16 +41,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.PriorityBlockingQueue;
 
 @SuppressWarnings("unused")
 @Getter
-@AllArgsConstructor
 public class EventManager {
-    private final Map<Class<? extends GeyserEvent>, PriorityQueue<EventHandler<? extends GeyserEvent>>> eventHandlers = new HashMap<>();
+    @Getter
+    private static EventManager instance;
+    private final Map<Class<? extends GeyserEvent>, PriorityBlockingQueue<EventHandler<? extends GeyserEvent>>> eventHandlers = new ConcurrentHashMap<>();
     private final Map<Object, ArrayList<EventHandler<?>>> classEventHandlers = new HashMap<>();
 
     private final GeyserConnector connector;
+
+    public EventManager(GeyserConnector connector) {
+        instance = this;
+        this.connector = connector;
+    }
 
     /**
      * Trigger a new event.
@@ -62,6 +69,7 @@ public class EventManager {
      */
     public <T extends GeyserEvent> TriggerResult<T> triggerEvent(T event, Class<?> filter) {
         if (eventHandlers.containsKey(event.getClass())) {
+
             for (EventHandler<?> handler : eventHandlers.get(event.getClass())) {
                 if (handler.hasFilter(filter)) {
                     try {
@@ -92,7 +100,7 @@ public class EventManager {
      */
     public <T extends GeyserEvent> void register(EventHandler<T> handler) {
         if (!eventHandlers.containsKey(handler.getEventClass())) {
-            eventHandlers.put(handler.getEventClass(), new PriorityQueue<>());
+            eventHandlers.put(handler.getEventClass(), new PriorityBlockingQueue<>());
         }
         eventHandlers.get(handler.getEventClass()).add(handler);
     }
