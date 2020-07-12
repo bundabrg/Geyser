@@ -44,6 +44,7 @@ import org.geysermc.connector.event.events.registry.BlockTranslatorRegistryEvent
 import org.geysermc.connector.network.translators.world.block.entity.BlockEntity;
 import org.geysermc.connector.network.translators.world.block.entity.BlockEntityTranslator;
 import org.geysermc.connector.utils.FileUtils;
+import org.reflections.Reflections;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -194,7 +195,7 @@ public class BlockTranslator {
                 identifier = clazz.getAnnotation(BlockEntity.class).regex();
                 // Endswith, or else the block bedrock gets picked up for bed
                 if (bedrock_identifer.endsWith(identifier) && !identifier.equals("")) {
-                    JAVA_ID_TO_BLOCK_ENTITY_MAP.put(javaRuntimeId, blockEntityEntry.getKey());
+                    JAVA_ID_TO_BLOCK_ENTITY_MAP.put(javaRuntimeId, clazz.getAnnotation(BlockEntity.class).name());
                     break;
                 }
             }

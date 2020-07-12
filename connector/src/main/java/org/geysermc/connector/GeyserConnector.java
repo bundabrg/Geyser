@@ -39,6 +39,7 @@ import org.geysermc.connector.bootstrap.GeyserBootstrap;
 import org.geysermc.connector.command.CommandManager;
 import org.geysermc.connector.event.EventManager;
 import org.geysermc.connector.configuration.GeyserConfiguration;
+import org.geysermc.connector.event.events.geyser.GeyserStartEvent;
 import org.geysermc.connector.event.events.network.BedrockCodecRegistryEvent;
 import org.geysermc.connector.metrics.Metrics;
 import org.geysermc.connector.network.ConnectorServerEventHandler;
@@ -143,8 +144,6 @@ public class GeyserConnector {
 
         // Set Codec
 //        BEDROCK_PACKET_CODEC = eventManager.triggerEvent(new BedrockCodecRegistryEvent(Bedrock_v407.V407_CODEC)).getEvent().getCodec();
-
-        PacketTranslatorRegistry.init();
 
         try {
             this.edition = GeyserEdition.create(this, config.getBedrock().getEdition());

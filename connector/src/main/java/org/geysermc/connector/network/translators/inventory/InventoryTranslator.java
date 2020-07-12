@@ -43,7 +43,7 @@ import java.util.Map;
 public abstract class InventoryTranslator {
 
     public static final Map<WindowType, InventoryTranslator> INVENTORY_TRANSLATORS = EventManager.getInstance()
-            .triggerEvent(new InventoryTranslatorRegistryEvent(new HashMap<>();
+            .triggerEvent(new InventoryTranslatorRegistryEvent(new HashMap<>())).getEvent().getRegisteredTranslators();
 
     public static final Register REGISTER = new Register();
 
