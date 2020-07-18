@@ -185,12 +185,6 @@ public class GeyserConnector {
             metrics.addCustomChart(new Metrics.SimplePie("edition", () -> config.getBedrock().getEdition()));
         }
 
-        // Enable Plugins
-        pluginManager.enablePlugins();
-
-        // Trigger GeyserStart Events
-        eventManager.triggerEvent(new GeyserStartEvent());
-
         boolean isGui = false;
         // This will check if we are in standalone and get the 'useGui' variable from there
         if (platformType == PlatformType.STANDALONE) {
