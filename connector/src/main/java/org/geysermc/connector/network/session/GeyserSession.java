@@ -245,41 +245,38 @@ public class GeyserSession implements CommandSender {
         startGame();
         this.remoteServer = remoteServer;
 
-        // These packets are sent a bit later to ensure the StartGame packet is processed first
-        connector.getGeneralThreadPool().schedule(() -> {
-            ChunkUtils.sendEmptyChunks(this, playerEntity.getPosition().toInt(), 0, false);
+        ChunkUtils.sendEmptyChunks(this, playerEntity.getPosition().toInt(), 0, false);
 
-            BiomeDefinitionListPacket biomeDefinitionListPacket = new BiomeDefinitionListPacket();
-            biomeDefinitionListPacket.setDefinitions(BiomeTranslator.BIOMES);
-            sendUpstreamPacket(biomeDefinitionListPacket);
+        BiomeDefinitionListPacket biomeDefinitionListPacket = new BiomeDefinitionListPacket();
+        biomeDefinitionListPacket.setDefinitions(BiomeTranslator.BIOMES);
+        sendUpstreamPacket(biomeDefinitionListPacket);
 
-            AvailableEntityIdentifiersPacket entityPacket = new AvailableEntityIdentifiersPacket();
-            entityPacket.setIdentifiers(EntityIdentifierRegistry.ENTITY_IDENTIFIERS);
-            sendUpstreamPacket(entityPacket);
+        AvailableEntityIdentifiersPacket entityPacket = new AvailableEntityIdentifiersPacket();
+        entityPacket.setIdentifiers(EntityIdentifierRegistry.ENTITY_IDENTIFIERS);
+        sendUpstreamPacket(entityPacket);
 
-            if (SHIM != null) {
-                SHIM.creativeContent(this);
-            } else {
-                CreativeContentPacket creativePacket = new CreativeContentPacket();
-                for (int i = 0; i < ItemRegistry.CREATIVE_ITEMS.length; i++) {
-                    creativePacket.getEntries().put(i + 1, ItemRegistry.CREATIVE_ITEMS[i]);
-                }
-                sendUpstreamPacket(creativePacket);
+        if (SHIM != null) {
+            SHIM.creativeContent(this);
+        } else {
+            CreativeContentPacket creativePacket = new CreativeContentPacket();
+            for (int i = 0; i < ItemRegistry.CREATIVE_ITEMS.length; i++) {
+                creativePacket.getEntries().put(i + 1, ItemRegistry.CREATIVE_ITEMS[i]);
             }
+            sendUpstreamPacket(creativePacket);
+        }
 
-            PlayStatusPacket playStatusPacket = new PlayStatusPacket();
-            playStatusPacket.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
-            sendUpstreamPacket(playStatusPacket);
+        PlayStatusPacket playStatusPacket = new PlayStatusPacket();
+        playStatusPacket.setStatus(PlayStatusPacket.Status.PLAYER_SPAWN);
+        sendUpstreamPacket(playStatusPacket);
 
-            UpdateAttributesPacket attributesPacket = new UpdateAttributesPacket();
-            attributesPacket.setRuntimeEntityId(getPlayerEntity().getGeyserId());
-            List<AttributeData> attributes = new ArrayList<>();
-            // Default move speed
-            // Bedrock clients move very fast by default until they get an attribute packet correcting the speed
-            attributes.add(new AttributeData("minecraft:movement", 0.0f, 1024f, 0.1f, 0.1f));
-            attributesPacket.setAttributes(attributes);
-            upstream.sendPacket(attributesPacket);
-        }, 500, TimeUnit.MILLISECONDS);
+        UpdateAttributesPacket attributesPacket = new UpdateAttributesPacket();
+        attributesPacket.setRuntimeEntityId(getPlayerEntity().getGeyserId());
+        List<AttributeData> attributes = new ArrayList<>();
+        // Default move speed
+        // Bedrock clients move very fast by default until they get an attribute packet correcting the speed
+        attributes.add(new AttributeData("minecraft:movement", 0.0f, 1024f, 0.1f, 0.1f));
+        attributesPacket.setAttributes(attributes);
+        upstream.sendPacket(attributesPacket);
     }
 
     public void login() {
