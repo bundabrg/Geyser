@@ -56,15 +56,15 @@ public class SkinProvider {
     public static final Skin EMPTY_SKIN = new Skin(-1, "steve", STEVE_SKIN);
     public static final byte[] ALEX_SKIN = new ProvidedSkin("skin/skin_alex.png").getSkin();
     public static final Skin EMPTY_SKIN_ALEX = new Skin(-1, "alex", ALEX_SKIN);
-    private static Map<String, Skin> cachedSkins = new ConcurrentHashMap<>();
-    private static Map<String, CompletableFuture<Skin>> requestedSkins = new ConcurrentHashMap<>();
+    private static final Map<String, Skin> cachedSkins = new ConcurrentHashMap<>();
+    private static final Map<String, CompletableFuture<Skin>> requestedSkins = new ConcurrentHashMap<>();
 
     public static final Cape EMPTY_CAPE = new Cape("", "no-cape", new byte[0], -1, true);
-    private static Map<String, Cape> cachedCapes = new ConcurrentHashMap<>();
-    private static Map<String, CompletableFuture<Cape>> requestedCapes = new ConcurrentHashMap<>();
+    private static final Map<String, Cape> cachedCapes = new ConcurrentHashMap<>();
+    private static final Map<String, CompletableFuture<Cape>> requestedCapes = new ConcurrentHashMap<>();
 
     public static final SkinGeometry EMPTY_GEOMETRY = SkinProvider.SkinGeometry.getLegacy(false);
-    private static Map<UUID, SkinGeometry> cachedGeometry = new ConcurrentHashMap<>();
+    private static final Map<UUID, SkinGeometry> cachedGeometry = new ConcurrentHashMap<>();
 
     public static final boolean ALLOW_THIRD_PARTY_EARS = GeyserConnector.getInstance().getConfig().isAllowThirdPartyEars();
     public static String EARS_GEOMETRY;
@@ -130,16 +130,19 @@ public class SkinProvider {
                 }
 
                 int count = 0;
+                final long expireTime = ((long)GeyserConnector.getInstance().getConfig().getCacheImages()) * ((long)1000 * 60 * 60 * 24);
                 for (File imageFile : Objects.requireNonNull(cacheFolder.listFiles())) {
-                    if (imageFile.lastModified() < System.currentTimeMillis() - (GeyserConnector.getInstance().getConfig().getCacheImages() * 1000 * 60 * 60 * 24)) {
+                    if (imageFile.lastModified() < System.currentTimeMillis() - expireTime) {
                         //noinspection ResultOfMethodCallIgnored
                         imageFile.delete();
                         count++;
                     }
                 }
 
-                GeyserConnector.getInstance().getLogger().debug(String.format("Removed %d cached image files as they have expired", count));
-            }, 1, 1440, TimeUnit.MINUTES);
+                if (count > 0) {
+                    GeyserConnector.getInstance().getLogger().debug(String.format("Removed %d cached image files as they have expired", count));
+                }
+            }, 10, 1440, TimeUnit.MINUTES);
         }
     }
 
