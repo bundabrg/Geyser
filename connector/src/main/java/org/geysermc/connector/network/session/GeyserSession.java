@@ -71,6 +71,7 @@ import org.geysermc.connector.event.events.network.SessionConnectEvent;
 import org.geysermc.connector.event.events.network.SessionDisconnectEvent;
 import org.geysermc.connector.event.events.packet.DownstreamPacketReceiveEvent;
 import org.geysermc.connector.event.events.packet.DownstreamPacketSendEvent;
+import org.geysermc.connector.event.events.packet.UpstreamPacketReceiveEvent;
 import org.geysermc.connector.event.events.packet.UpstreamPacketSendEvent;
 import org.geysermc.connector.inventory.PlayerInventory;
 import org.geysermc.connector.network.remote.RemoteServer;
@@ -249,6 +250,10 @@ public class GeyserSession implements CommandSender {
     public void connect(RemoteServer remoteServer) {
         this.remoteServer = remoteServer;
 
+        if (EventManager.getInstance().triggerEvent(new GeyserLoginEvent(this)).isCancelled()) {
+            return;
+        }
+
         if (connector.getAuthType() != AuthType.ONLINE) {
             if (connector.getAuthType() == AuthType.OFFLINE) {
                 connector.getLogger().info(LanguageUtils.getLocaleStringLog("geyser.auth.login.offline"));
@@ -288,6 +293,10 @@ public class GeyserSession implements CommandSender {
     }
 
     public void initialize() {
+        if (getUpstream().isInitialized()) {
+            return;
+        }
+
         startGame();
 
         BiomeDefinitionListPacket biomeDefinitionListPacket = new BiomeDefinitionListPacket();
@@ -309,29 +318,17 @@ public class GeyserSession implements CommandSender {
         }
     }
 
-    public void login() {
-        if (EventManager.getInstance().triggerEvent(new GeyserLoginEvent(this)).isCancelled()) {
-            return;
-        }
-
-        if (connector.getAuthType() != AuthType.ONLINE) {
-            if (connector.getAuthType() == AuthType.OFFLINE) {
-                connector.getLogger().info(LanguageUtils.getLocaleStringLog("geyser.auth.login.offline"));
-            } else {
-                connector.getLogger().info(LanguageUtils.getLocaleStringLog("geyser.auth.login.floodgate"));
-            }
-            authenticate(authData.getName());
-        }
-    }
-
     public void authenticate(String username) {
         authenticate(username, "");
     }
 
     public void authenticate(String username, String password) {
-        if (EventManager.getInstance().triggerEvent(new GeyserAuthenticationEvent(this, username, password)).isCancelled()) {
+        EventManager.TriggerResult<GeyserAuthenticationEvent> result = EventManager.getInstance().triggerEvent(new GeyserAuthenticationEvent(this, username, password));
+        if (result.isCancelled()) {
             return;
         }
+        final String user = result.getEvent().getUsername();
+        final String pass = result.getEvent().getPassword();
 
         if (loggedIn) {
             connector.getLogger().severe(LanguageUtils.getLocaleStringLog("geyser.auth.already_loggedin", username));
@@ -342,10 +339,10 @@ public class GeyserSession implements CommandSender {
         // new thread so clients don't timeout
         new Thread(() -> {
             try {
-                if (password != null && !password.isEmpty()) {
-                    protocol = new MinecraftProtocol(username.replace(" ","_"), password);
+                if (pass != null && !pass.isEmpty()) {
+                    protocol = new MinecraftProtocol(user.replace(" ","_"), pass);
                 } else {
-                    protocol = new MinecraftProtocol(username.replace(" ","_"));
+                    protocol = new MinecraftProtocol(user.replace(" ","_"));
                 }
 
                 boolean floodgate = connector.getAuthType() == AuthType.FLOODGATE;
@@ -551,6 +548,18 @@ public class GeyserSession implements CommandSender {
     }
 
     public void sendForm(FormWindow window, int id) {
+        if (!getUpstream().isInitialized()) {
+            initialize();
+            start();
+            EventManager.getInstance().on(UpstreamPacketReceiveEvent.class, (h, e) -> {
+                h.unregister();
+                windowCache.showWindow(window, id);
+            })
+                    .filter(SetLocalPlayerAsInitializedPacket.class)
+                    .build();
+            return;
+        }
+
         windowCache.showWindow(window, id);
     }
 
@@ -569,6 +578,18 @@ public class GeyserSession implements CommandSender {
     }
 
     public void sendForm(FormWindow window) {
+        if (!getUpstream().isInitialized()) {
+            initialize();
+            start();
+            EventManager.getInstance().on(UpstreamPacketReceiveEvent.class, (h,e) -> {
+                h.unregister();
+                windowCache.showWindow(window);
+            })
+                    .filter(SetLocalPlayerAsInitializedPacket.class)
+                    .build();
+            return;
+        }
+
         windowCache.showWindow(window);
     }
 
