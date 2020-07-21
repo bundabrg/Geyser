@@ -61,14 +61,21 @@ public class JavaJoinGameTranslator extends PacketTranslator<ServerJoinGamePacke
             session.getScoreboardCache().removeScoreboard();
         }
 
+        if (!session.getUpstream().isInitialized()) {
+            entity.setDimension(packet.getDimension());
+            session.initialize();
+        } else {
+            // TODO: Fix this
+//            if (packet.getDimension().equals(entity.getDimension())) {
+//                DimensionUtils.switchDimension(session, entity.getDimension() == 0 ? -1 : 0);
+//            }
+            DimensionUtils.switchDimension(session, packet.getDimension());
+        }
+
         AdventureSettingsPacket bedrockPacket = new AdventureSettingsPacket();
         bedrockPacket.setUniqueEntityId(session.getPlayerEntity().getGeyserId());
         bedrockPacket.setPlayerPermission(PlayerPermission.MEMBER);
         session.sendUpstreamPacket(bedrockPacket);
-
-        PlayStatusPacket playStatus = new PlayStatusPacket();
-        playStatus.setStatus(PlayStatusPacket.Status.LOGIN_SUCCESS);
-        // session.sendPacket(playStatus);
 
         SetPlayerGameTypePacket playerGameTypePacket = new SetPlayerGameTypePacket();
         playerGameTypePacket.setGamemode(packet.getGameMode().ordinal());
@@ -87,9 +94,5 @@ public class JavaJoinGameTranslator extends PacketTranslator<ServerJoinGamePacke
         List<SkinPart> skinParts = Arrays.asList(SkinPart.values());
         ClientSettingsPacket clientSettingsPacket = new ClientSettingsPacket(locale, (byte) session.getRenderDistance(), ChatVisibility.FULL, true, skinParts, HandPreference.RIGHT_HAND);
         session.sendDownstreamPacket(clientSettingsPacket);
-
-        if (!packet.getDimension().equals(entity.getDimension())) {
-            DimensionUtils.switchDimension(session, packet.getDimension());
-        }
     }
 }
