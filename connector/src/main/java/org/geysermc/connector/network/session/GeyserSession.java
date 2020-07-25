@@ -311,9 +311,7 @@ public class GeyserSession implements CommandSender {
             SHIM.creativeContent(this);
         } else {
             CreativeContentPacket creativePacket = new CreativeContentPacket();
-            for (int i = 0; i < ItemRegistry.CREATIVE_ITEMS.length; i++) {
-                creativePacket.getEntries().put(i + 1, ItemRegistry.CREATIVE_ITEMS[i]);
-            }
+            creativePacket.setContents(ItemRegistry.CREATIVE_ITEMS);
             sendUpstreamPacket(creativePacket);
         }
     }
