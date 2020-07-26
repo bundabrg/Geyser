@@ -48,7 +48,16 @@ jobs:
       #          sed -i "/^version:.*/ s/-dev$/-b${GITHUB_RUN_NUMBER}/" src/main/resources/bungee.yml
       #          sed -i "/version = .*/ s/-dev/-b${GITHUB_RUN_NUMBER}/" GeyserLink-Geyser/src/main/java/au/com/grieve/geyserlink/geyser/GeyserLink.java
 
-      - name: Build with Maven
+      - if: "!startsWith(github.ref,'refs/tags/v')"
+        name: Build with Maven (Non-Release)
+        run: |
+          git submodule update --init --recursive
+          mkdir -p build/output
+          mvn -B package --file pom.xml && \
+            cp bootstrap/*/target/Geyser*.jar build/output/
+
+      - if: "startsWith(github.ref,'refs/tags/v')"
+        name: Build with Maven (Release)
         run: |
           git submodule update --init --recursive
           mkdir -p build/output
