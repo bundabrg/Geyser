@@ -52,7 +52,7 @@ jobs:
         run: |
           git submodule update --init --recursive
           mkdir -p build/output
-          mvn -B package --file pom.xml && \
+          mvn -B package --file pom.xml -U && \
             cp bootstrap/*/target/Geyser*.jar build/output/
 
       #      - name: Publish to Maven Repo
