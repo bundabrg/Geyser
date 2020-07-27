@@ -64,6 +64,12 @@ jobs:
           mvn -B package --file pom.xml -U && \
             cp bootstrap/*/target/Geyser*.jar build/output/
 
+          tag_name="${GITHUB_REF##*/}"
+
+          for f in build/output/*.jar; do
+            mv ${f} ${f%.*}-${tag_name}.jar
+          done
+
       #      - name: Publish to Maven Repo
       #        if: (github.ref == 'refs/heads/master' || startsWith(github.ref,'refs/tags/v'))
       #        run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
