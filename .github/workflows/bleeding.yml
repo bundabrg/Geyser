@@ -160,7 +160,7 @@ jobs:
           NOTE: This is an unofficial build and includes bleeding edge features for testing.
 
           Since Last Release:
-          $(git log $(git describe --tags --abbrev=0 HEAD^ 2> /dev/null || git rev-list --max-parents=0 HEAD)..HEAD --graph --pretty=format:'%h %d %s [%an]' | head -n 300)
+          $(git log $(git describe --tags --abbrev=0 HEAD^ 2> /dev/null && echo ^ || git rev-list --max-parents=0 HEAD)..HEAD --graph --pretty=format:'%h %d %s [%an]' | head -n 300)
           EOF
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
