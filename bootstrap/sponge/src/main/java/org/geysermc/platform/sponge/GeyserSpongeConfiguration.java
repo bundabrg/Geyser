@@ -157,7 +157,7 @@ public class GeyserSpongeConfiguration implements GeyserConfiguration {
 
     @Override
     public int getCacheImages() {
-        return node.getNode("cache-skins").getInt(180);
+        return node.getNode("cache-skins").getInt(0);
     }
 
     @Override
@@ -212,8 +212,18 @@ public class GeyserSpongeConfiguration implements GeyserConfiguration {
         }
 
         @Override
+        public void setAddress(String address) {
+            node.getNode("address").setValue(address);
+        }
+
+        @Override
         public int getPort() {
             return node.getNode("port").getInt(25565);
+        }
+
+        @Override
+        public void setPort(int port) {
+            node.getNode("port").setValue(port);
         }
 
         @Override

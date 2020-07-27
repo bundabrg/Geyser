@@ -27,6 +27,8 @@ package org.geysermc.connector.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -56,11 +58,16 @@ public class SkinProvider {
     public static final Skin EMPTY_SKIN = new Skin(-1, "steve", STEVE_SKIN);
     public static final byte[] ALEX_SKIN = new ProvidedSkin("skin/skin_alex.png").getSkin();
     public static final Skin EMPTY_SKIN_ALEX = new Skin(-1, "alex", ALEX_SKIN);
-    private static final Map<String, Skin> cachedSkins = new ConcurrentHashMap<>();
+    private static final Cache<String, Skin> cachedSkins = CacheBuilder.newBuilder()
+            .expireAfterAccess(1, TimeUnit.HOURS)
+            .build();
+
     private static final Map<String, CompletableFuture<Skin>> requestedSkins = new ConcurrentHashMap<>();
 
     public static final Cape EMPTY_CAPE = new Cape("", "no-cape", new byte[0], -1, true);
-    private static final Map<String, Cape> cachedCapes = new ConcurrentHashMap<>();
+    private static final Cache<String, Cape> cachedCapes = CacheBuilder.newBuilder()
+            .expireAfterAccess(1, TimeUnit.HOURS)
+            .build();
     private static final Map<String, CompletableFuture<Cape>> requestedCapes = new ConcurrentHashMap<>();
 
     public static final SkinGeometry EMPTY_GEOMETRY = SkinProvider.SkinGeometry.getLegacy(false);
@@ -72,7 +79,6 @@ public class SkinProvider {
     public static SkinGeometry SKULL_GEOMETRY;
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    private static final int CACHE_INTERVAL = 30 * 60 * 1000; // 30 minutes
 
     public static void init() {
         /* Load in the normal ears geometry */
@@ -147,15 +153,17 @@ public class SkinProvider {
     }
 
     public static boolean hasCapeCached(String capeUrl) {
-        return cachedCapes.containsKey(capeUrl);
+        return cachedCapes.getIfPresent(capeUrl) != null;
     }
 
     public static Skin getCachedSkin(String skinUrl) {
-        return cachedSkins.getOrDefault(skinUrl, EMPTY_SKIN);
+        Skin skin = cachedSkins.getIfPresent(skinUrl);
+        return skin != null ? skin : EMPTY_SKIN;
     }
 
     public static Cape getCachedCape(String capeUrl) {
-        return capeUrl != null ? cachedCapes.getOrDefault(capeUrl, EMPTY_CAPE) : EMPTY_CAPE;
+        Cape cape = capeUrl != null ? cachedCapes.getIfPresent(capeUrl) : EMPTY_CAPE;
+        return cape != null ? cape : EMPTY_CAPE;
     }
 
     public static CompletableFuture<SkinAndCape> requestSkinAndCape(UUID playerId, String skinUrl, String capeUrl) {
@@ -177,19 +185,17 @@ public class SkinProvider {
         if (textureUrl == null || textureUrl.isEmpty()) return CompletableFuture.completedFuture(EMPTY_SKIN);
         if (requestedSkins.containsKey(textureUrl)) return requestedSkins.get(textureUrl); // already requested
 
-        if ((System.currentTimeMillis() - CACHE_INTERVAL) < cachedSkins.getOrDefault(textureUrl, EMPTY_SKIN).getRequestedOn()) {
-            // no need to update, still cached
-            return CompletableFuture.completedFuture(cachedSkins.get(textureUrl));
+        Skin cachedSkin = cachedSkins.getIfPresent(textureUrl);
+        if (cachedSkin != null) {
+            return CompletableFuture.completedFuture(cachedSkin);
         }
 
         CompletableFuture<Skin> future;
         if (newThread) {
             future = CompletableFuture.supplyAsync(() -> supplySkin(playerId, textureUrl), EXECUTOR_SERVICE)
                     .whenCompleteAsync((skin, throwable) -> {
-                        if (!cachedSkins.getOrDefault(textureUrl, EMPTY_SKIN).getTextureUrl().equals(textureUrl)) {
-                            skin.updated = true;
-                            cachedSkins.put(textureUrl, skin);
-                        }
+                        skin.updated = true;
+                        cachedSkins.put(textureUrl, skin);
                         requestedSkins.remove(textureUrl);
                     });
             requestedSkins.put(textureUrl, future);
@@ -206,11 +212,9 @@ public class SkinProvider {
         if (requestedCapes.containsKey(capeUrl)) return requestedCapes.get(capeUrl); // already requested
 
         boolean officialCape = provider == CapeProvider.MINECRAFT;
-        boolean validCache = (System.currentTimeMillis() - CACHE_INTERVAL) < cachedCapes.getOrDefault(capeUrl, EMPTY_CAPE).getRequestedOn();
-
-        if ((cachedCapes.containsKey(capeUrl) && officialCape) || validCache) {
-            // the cape is an official cape (static) or the cape doesn't need a update yet
-            return CompletableFuture.completedFuture(cachedCapes.get(capeUrl));
+        Cape cachedCape = cachedCapes.getIfPresent(capeUrl);
+        if (cachedCape != null) {
+            return CompletableFuture.completedFuture(cachedCape);
         }
 
         CompletableFuture<Cape> future;
@@ -283,7 +287,10 @@ public class SkinProvider {
     }
 
     public static CompletableFuture<Cape> requestBedrockCape(UUID playerID, boolean newThread) {
-        Cape bedrockCape = cachedCapes.getOrDefault(playerID.toString() + ".Bedrock", EMPTY_CAPE);
+        Cape bedrockCape = cachedCapes.getIfPresent(playerID.toString() + ".Bedrock");
+        if (bedrockCape == null) {
+            bedrockCape = EMPTY_CAPE;
+        }
         return CompletableFuture.completedFuture(bedrockCape);
     }
 

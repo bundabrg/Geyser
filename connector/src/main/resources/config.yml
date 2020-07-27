@@ -97,7 +97,8 @@ cache-chunks: false
 # Allows custom skulls to be displayed.
 allow-custom-skulls: true
 
-# Specify how many days images will be cached to disk. A value of 0 is disabled.
+# Specify how many days images will be cached to disk to save downloading them from the internet.
+# A value of 0 is disabled. (Default: 0)
 cache-images: 0
 
 # Bedrock prevents building and displaying blocks above Y127 in the Nether -
