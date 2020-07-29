@@ -273,75 +273,6 @@
     Events
   </a>
   
-    <nav class="md-nav" aria-label="Events">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#downstreampacketreceiveeventt" class="md-nav__link">
-    DownstreamPacketReceiveEvent&lt;T&gt;
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#downstreampacketsendeventt" class="md-nav__link">
-    DownstreamPacketSendEvent&lt;T&gt;
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#geyserstartevent" class="md-nav__link">
-    GeyserStartEvent
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#geyserstopevent" class="md-nav__link">
-    GeyserStopEvent
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#plugindisableevent" class="md-nav__link">
-    PluginDisableEvent
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#pluginenableevent" class="md-nav__link">
-    PluginEnableEvent
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#pluginmessageevent" class="md-nav__link">
-    PluginMessageEvent
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#upstreampacketreceiveeventt" class="md-nav__link">
-    UpstreamPacketReceiveEvent&lt;T&gt;
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#upstreampacketsendeventt" class="md-nav__link">
-    UpstreamPacketSendEvent&lt;T&gt;
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
     </ul>
@@ -451,75 +382,6 @@
     Events
   </a>
   
-    <nav class="md-nav" aria-label="Events">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#downstreampacketreceiveeventt" class="md-nav__link">
-    DownstreamPacketReceiveEvent&lt;T&gt;
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#downstreampacketsendeventt" class="md-nav__link">
-    DownstreamPacketSendEvent&lt;T&gt;
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#geyserstartevent" class="md-nav__link">
-    GeyserStartEvent
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#geyserstopevent" class="md-nav__link">
-    GeyserStopEvent
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#plugindisableevent" class="md-nav__link">
-    PluginDisableEvent
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#pluginenableevent" class="md-nav__link">
-    PluginEnableEvent
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#pluginmessageevent" class="md-nav__link">
-    PluginMessageEvent
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#upstreampacketreceiveeventt" class="md-nav__link">
-    UpstreamPacketReceiveEvent&lt;T&gt;
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#upstreampacketsendeventt" class="md-nav__link">
-    UpstreamPacketSendEvent&lt;T&gt;
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
     </ul>
@@ -547,27 +409,31 @@
 either by defining a method to be an event handler or by providing a lambda.  Each event handler will be executed
 in turn based upon their priority.</p>
 <h2 id="triggering-an-event">Triggering an Event<a class="headerlink" href="#triggering-an-event" title="Permanent link">&para;</a></h2>
-<p>An event is derived from either <code>GeyserEvent</code> or <code>CancellableGeyserEvent</code>.</p>
+<p>An event derives from <a href="https://bundabrg.github.io/Geyser/apidocs/org/geysermc/connector/event/GeyserEvent.html">GeyserEvent</a> 
+and can implement <a href="https://bundabrg.github.io/Geyser/apidocs/org/geysermc/connector/event/Cancellable.html">Cancellable</a> 
+if it should support being cancelled, and <a href="https://bundabrg.github.io/Geyser/apidocs/org/geysermc/connector/event/Session.html">Session</a> 
+if it should support a <a href="https://bundabrg.github.io/Geyser/apidocs/org/geysermc/connector/network/session/GeyserSession.html">GeyserSession</a>.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyCustomEvent</span> <span class="kd">extends</span> <span class="n">GeyserEvent</span> <span class="p">{</span>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyCustomEvent</span> <span class="kd">extends</span> <span class="n">GeyserEvent</span> <span class="kd">implements</span> <span class="n">Cancellable</span> <span class="p">{</span>
 <span class="p">}</span>
 </code></pre></div>
 
 </div>
-<p>The event is triggered through the <code>triggerEvent</code> method of the Event Manager.  </p>
+<p>The event can be triggered through the <code>triggerEvent</code> method of the <a href="https://bundabrg.github.io/Geyser/apidocs/org/geysermc/connector/event/EventManager.html">EventManager</a>.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code><span class="n">eventManager</span><span class="p">.</span><span class="na">triggerEvent</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCustomEvent</span><span class="p">());</span>
+<div class="highlight"><pre><span></span><code><span class="n">EventManager</span><span class="p">.</span><span class="na">getInstance</span><span class="p">().</span><span class="na">triggerEvent</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCustomEvent</span><span class="p">());</span>
 </code></pre></div>
 
 </div>
-<p>This returns an EventResult which can be used to chain additional commands based upon the result. They include <code>onNotCancelled()</code>, 
-<code>onCancelled()</code> and <code>orElse()</code> to more easily execute based upon the result and they can chain together.</p>
+<p>This returns an <a href="https://bundabrg.github.io/Geyser/apidocs/org/geysermc/connector/event/EventResult.html">EventResult</a> 
+which can be used to chain additional commands based upon the result. They include <code>onNotCancelled()</code>, 
+<code>onCancelled()</code> and <code>orElse()</code> to more easily execute based upon the result. All methods can be chained together.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code><span class="n">eventManager</span><span class="p">.</span><span class="na">triggerEvent</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCustomEvent</span><span class="p">())</span>
-    <span class="p">.</span><span class="na">onNotCancelled</span><span class="p">((</span><span class="n">result</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">{</span>
+<div class="highlight"><pre><span></span><code><span class="n">EventManager</span><span class="p">.</span><span class="na">getInstance</span><span class="p">().</span><span class="na">triggerEvent</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCustomEvent</span><span class="p">())</span>
+    <span class="p">.</span><span class="na">onNotCancelled</span><span class="p">(</span><span class="n">result</span> <span class="o">-&gt;</span> <span class="p">{</span>
         <span class="c1">// Code executed if events were not cancelled</span>
     <span class="p">})</span>
     <span class="p">.</span><span class="na">orElse</span><span class="p">((</span><span class="n">result</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">{</span>
@@ -576,27 +442,34 @@ in turn based upon their priority.</p>
 </code></pre></div>
 
 </div>
-<p><code>triggerEvent()</code> can have an optional extra parameter passing in a <code>Class&lt;?&gt;</code>. If set then the handler will only execute if it 
-has a filter list containing this filter.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code><span class="n">EventResult</span><span class="o">&lt;</span><span class="n">MyCustomEvent</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">EventManager</span><span class="p">.</span><span class="na">getInstance</span><span class="p">().</span><span class="na">triggerEvent</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCustomEvent</span><span class="p">());</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">result</span><span class="p">.</span><span class="na">isCancelled</span><span class="p">())</span> <span class="p">{</span>
+    <span class="c1">// do something</span>
+<span class="p">}</span>
+</code></pre></div>
+
+</div>
 <h2 id="listening-to-an-event">Listening to an Event<a class="headerlink" href="#listening-to-an-event" title="Permanent link">&para;</a></h2>
 <p>There are two ways to listen for an event. One can either create an event handler method or one can create an anonymous
 lamda to be executed when the event is triggered.</p>
 <h3 id="class-event-handler">Class Event Handler<a class="headerlink" href="#class-event-handler" title="Permanent link">&para;</a></h3>
-<p>An event handler method is a method that is annotated with <code>@Event</code>. The class it belongs to must also be registered
-with the event manager.</p>
+<p>An event handler method is a method that is annotated with <a href="https://bundabrg.github.io/Geyser/apidocs/org/geysermc/connector/event/annotations/GeyserEventHandler.html">@GeyserEventHandler</a>. 
+The class it belongs to must also be registered with the event manager.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
 <div class="highlight"><pre><span></span><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyClass</span> <span class="p">{</span>
 
     <span class="nd">@Event</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onEnable</span><span class="p">(</span><span class="n">MyCustomEvent</span> <span class="n">event</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">System</span><span class="p">.</span><span class="na">err</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Hello World&quot;</span><span class="p">);</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onMyEvent</span><span class="p">(</span><span class="n">MyCustomEvent</span> <span class="n">event</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">GeyserConnector</span><span class="p">.</span><span class="na">getInstance</span><span class="p">().</span><span class="na">getLogger</span><span class="p">().</span><span class="na">info</span><span class="p">(</span><span class="s">&quot;Hello World&quot;</span><span class="p">);</span>
     <span class="p">}</span>
 <span class="p">}</span>
 
 <span class="p">...</span>
 
-<span class="n">GeyserConnecter</span><span class="p">.</span><span class="na">getInstance</span><span class="p">().</span><span class="na">getEventManager</span><span class="p">.</span><span class="na">registerEvents</span><span class="p">(</span><span class="k">new</span> <span class="n">MyClass</span><span class="p">());</span>
+<span class="n">EventManager</span><span class="p">().</span><span class="na">getInstance</span><span class="p">().</span><span class="na">registerEvents</span><span class="p">(</span><span class="k">new</span> <span class="n">MyClass</span><span class="p">());</span>
 </code></pre></div>
 
 </div>
@@ -604,29 +477,23 @@ with the event manager.</p>
 <p class="admonition-title">Important</p>
 <p>Plugins should use the <code>registerEvents</code> method inherited from <code>GeyserPlugin</code>.</p>
 </div>
-<p>The <code>@Event</code> annotation has the following optional parameters:</p>
-<ul>
-<li><strong>priority</strong> - <code>Integer</code> from 0 - 100. Default <code>50</code>. Event Handlers are executed in order from lowest to highest priority.</li>
-<li><strong>ignoreCancelled</strong> - <code>Boolean</code>. Default <code>true</code>. If true then if an event is cancelled the handler will not be executed.</li>
-<li><strong>filter</strong> - <code>List&lt;Class&lt;?&gt;&gt;</code>. Default {}. If set will only execute the event handler if the passed in filter to <code>triggerEvent</code> 
-is null or matches any on this list.</li>
-</ul>
 <p><code>MyCustomEvent</code> is the event defined previously.</p>
 <h3 id="anonymous-lambda">Anonymous Lambda<a class="headerlink" href="#anonymous-lambda" title="Permanent link">&para;</a></h3>
 <p>An event can be hooked through the <code>on</code> method of the EventManager provided with an anonymous function. This allows
 code to be placed logically close to where it is related in the code instead of having to set up a separate class and
-method listeners.</p>
+method listeners. You will need to remember to unregister an event handler when needed.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code><span class="n">GeyserConnector</span><span class="p">.</span><span class="na">getInstance</span><span class="p">().</span><span class="na">getEventManager</span><span class="p">().</span><span class="na">on</span><span class="p">(</span><span class="n">MyCustomEvent</span><span class="p">.</span><span class="na">class</span><span class="p">,</span> <span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">{</span>
+<div class="highlight"><pre><span></span><code><span class="n">EventHandler</span><span class="o">&lt;</span><span class="n">MyCustomEvent</span><span class="o">&gt;</span> <span class="n">handler</span> <span class="o">=</span> <span class="n">EventManager</span><span class="p">.</span><span class="na">getInstance</span><span class="p">().</span><span class="na">on</span><span class="p">(</span><span class="n">MyCustomEvent</span><span class="p">.</span><span class="na">class</span><span class="p">,</span> <span class="n">event</span> <span class="o">-&gt;</span> <span class="p">{</span>
     <span class="n">System</span><span class="p">.</span><span class="na">err</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Hello World&quot;</span><span class="p">);</span>
-<span class="p">}).</span><span class="na">build</span><span class="p">();</span>
+<span class="p">})</span>
+    <span class="p">.</span><span class="na">build</span><span class="p">();</span>
 </code></pre></div>
 
 </div>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>Plugins should use the <code>on</code> method inherited from <code>GeyserPlugin</code>.</p>
+<p>Plugins should use the <code>on</code> method inherited from <a href="https://bundabrg.github.io/Geyser/apidocs/org/geysermc/connector/plugin/GeyserPlugin.html">GeyserPlugin</a>.</p>
 </div>
 <p>You'll note the <code>build()</code> on the end. <code>on()</code> returns a Builder that can add optional parameters. This must be finalized with a
 <code>build()</code> that generates the EventHandler and registers it with the EventManager. </p>
@@ -634,11 +501,10 @@ method listeners.</p>
 <ul>
 <li><code>priority(int)</code> - Set the event priority. Default <code>EventHandler.PRIORITY.NORMAL</code></li>
 <li><code>ignoreCancelled(boolean)</code> - If true the handler will not execute if cancelled. Default <code>true</code>.</li>
-<li><code>filter(Class&lt;?&gt;[])</code> - List of filters the handler will accept. Default <code>{}</code></li>
 </ul>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code><span class="n">GeyserConnector</span><span class="p">.</span><span class="na">getInstance</span><span class="p">().</span><span class="na">getEventManager</span><span class="p">().</span><span class="na">on</span><span class="p">(</span><span class="n">MyCustomEvent</span><span class="p">.</span><span class="na">class</span><span class="p">,</span> <span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">{</span>
+<div class="highlight"><pre><span></span><code><span class="n">EventHandler</span><span class="o">&lt;</span><span class="n">MyCustomEvent</span><span class="o">&gt;</span> <span class="n">handler</span> <span class="o">=</span> <span class="n">EventManager</span><span class="p">.</span><span class="na">getInstance</span><span class="p">().</span><span class="na">on</span><span class="p">(</span><span class="n">MyCustomEvent</span><span class="p">.</span><span class="na">class</span><span class="p">,</span> <span class="n">event</span> <span class="o">-&gt;</span> <span class="p">{</span>
     <span class="n">System</span><span class="p">.</span><span class="na">err</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&quot;Hello World&quot;</span><span class="p">);</span>
 <span class="p">})</span>
     <span class="p">.</span><span class="na">priority</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
@@ -648,252 +514,9 @@ method listeners.</p>
 
 </div>
 <h2 id="events_1">Events<a class="headerlink" href="#events_1" title="Permanent link">&para;</a></h2>
+<p>Please refer to the <a href="https://bundabrg.github.io/Geyser/apidocs/">API Docs</a> for more information. Geyser events are
+defined under <code>org.geysermc.connector.event.events</code>.</p>
 <p>Geyser has the following predefined Events.</p>
-<h3 id="downstreampacketreceiveeventt">DownstreamPacketReceiveEvent<code>&lt;T&gt;</code><a class="headerlink" href="#downstreampacketreceiveeventt" title="Permanent link">&para;</a></h3>
-<p><em>cancellable</em></p>
-<table>
-<thead>
-<tr>
-<th>Modifier and Type</th>
-<th>Method</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>GeyserSession</td>
-<td>getSession()</td>
-<td>Gets the current session</td>
-</tr>
-<tr>
-<td>T</td>
-<td>getPacket()</td>
-<td>Gets the Packet</td>
-</tr>
-</tbody>
-</table>
-<p>Triggered for each packet received from downstream. If cancelled then regular processing of the packet will not occur.</p>
-<p>The type of packet should be passed in as a Type. The filter should also be set to limit what packets you want otherwise
-every Downstream packet will trigger this handler.</p>
-<div class="admonition example">
-<p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code><span class="nd">@Event</span><span class="p">(</span><span class="n">filter</span> <span class="o">=</span> <span class="n">ClientChatPacket</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">onTextPacket</span><span class="p">(</span><span class="n">DownstreamPacketReceiveEvent</span><span class="o">&lt;</span><span class="n">ClientChatPacket</span><span class="o">&gt;</span> <span class="n">event</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">getLogger</span><span class="p">().</span><span class="na">warning</span><span class="p">(</span><span class="s">&quot;Got packet: &quot;</span> <span class="o">+</span> <span class="n">event</span><span class="p">.</span><span class="na">getPacket</span><span class="p">());</span>
-<span class="p">}</span>
-</code></pre></div>
-
-</div>
-<div class="admonition example">
-<p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code><span class="nd">@Event</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">onGenericPacket</span><span class="p">(</span><span class="n">DownstreamPacketReceiveEvent</span><span class="o">&lt;</span><span class="n">Packet</span><span class="o">&gt;</span> <span class="n">event</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">getLogger</span><span class="p">().</span><span class="na">warning</span><span class="p">(</span><span class="s">&quot;Got generic packet: &quot;</span> <span class="o">+</span> <span class="n">event</span><span class="p">.</span><span class="na">getPacket</span><span class="p">());</span>
-<span class="p">}</span>
-</code></pre></div>
-
-</div>
-<h3 id="downstreampacketsendeventt">DownstreamPacketSendEvent<code>&lt;T&gt;</code><a class="headerlink" href="#downstreampacketsendeventt" title="Permanent link">&para;</a></h3>
-<p><em>cancellable</em></p>
-<table>
-<thead>
-<tr>
-<th>Modifier and Type</th>
-<th>Method</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>GeyserSession</td>
-<td>getSession()</td>
-<td>Gets the current session</td>
-</tr>
-<tr>
-<td>T</td>
-<td>getPacket()</td>
-<td>Gets the Packet</td>
-</tr>
-</tbody>
-</table>
-<p>Triggered for each packet sent to downstream. If cancelled then the packet will not be sent.</p>
-<p>The type of packet should be passed in as a Type. The filter should also be set to limit what packets you want otherwise
-every Downstream packet will trigger this handler.</p>
-<div class="admonition example">
-<p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code><span class="nd">@Event</span><span class="p">(</span><span class="n">filter</span> <span class="o">=</span> <span class="n">ServerChatPacket</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">onTextPacket</span><span class="p">(</span><span class="n">DownstreamPacketSendEvent</span><span class="o">&lt;</span><span class="n">ServerChatPacket</span><span class="o">&gt;</span> <span class="n">event</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">getLogger</span><span class="p">().</span><span class="na">warning</span><span class="p">(</span><span class="s">&quot;Sending packet: &quot;</span> <span class="o">+</span> <span class="n">event</span><span class="p">.</span><span class="na">getPacket</span><span class="p">());</span>
-<span class="p">}</span>
-</code></pre></div>
-
-</div>
-<div class="admonition example">
-<p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code><span class="nd">@Event</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">onGenericPacket</span><span class="p">(</span><span class="n">DownstreamPacketSendEvent</span><span class="o">&lt;</span><span class="n">Packet</span><span class="o">&gt;</span> <span class="n">event</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">getLogger</span><span class="p">().</span><span class="na">warning</span><span class="p">(</span><span class="s">&quot;Sending generic packet: &quot;</span> <span class="o">+</span> <span class="n">event</span><span class="p">.</span><span class="na">getPacket</span><span class="p">());</span>
-<span class="p">}</span>
-</code></pre></div>
-
-</div>
-<h3 id="geyserstartevent">GeyserStartEvent<a class="headerlink" href="#geyserstartevent" title="Permanent link">&para;</a></h3>
-<p>Triggered after Geyser has finished starting.</p>
-<h3 id="geyserstopevent">GeyserStopEvent<a class="headerlink" href="#geyserstopevent" title="Permanent link">&para;</a></h3>
-<p>Triggered when Geyser is about to stop.</p>
-<h3 id="plugindisableevent">PluginDisableEvent<a class="headerlink" href="#plugindisableevent" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>Modifier and Type</th>
-<th>Method</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>GeyserPlugin</td>
-<td>getPlugin()</td>
-<td>Gets the Plugin</td>
-</tr>
-</tbody>
-</table>
-<p>Triggered each time a plugin is disabled.</p>
-<h3 id="pluginenableevent">PluginEnableEvent<a class="headerlink" href="#pluginenableevent" title="Permanent link">&para;</a></h3>
-<p><em>cancellable</em></p>
-<table>
-<thead>
-<tr>
-<th>Modifier and Type</th>
-<th>Method</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>GeyserPlugin</td>
-<td>getPlugin()</td>
-<td>Gets the Plugin</td>
-</tr>
-</tbody>
-</table>
-<p>Triggered each time a plugin is enabled.</p>
-<h3 id="pluginmessageevent">PluginMessageEvent<a class="headerlink" href="#pluginmessageevent" title="Permanent link">&para;</a></h3>
-<p><em>cancellable</em></p>
-<table>
-<thead>
-<tr>
-<th>Modifier and Type</th>
-<th>Method</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>String</td>
-<td>getChannel()</td>
-<td>Gets the message channel</td>
-</tr>
-<tr>
-<td>byte[]</td>
-<td>getData()</td>
-<td>Gets the message data</td>
-</tr>
-<tr>
-<td>GeyserSession</td>
-<td>getSession()</td>
-<td>Gets the current session</td>
-</tr>
-</tbody>
-</table>
-<h3 id="upstreampacketreceiveeventt">UpstreamPacketReceiveEvent<code>&lt;T&gt;</code><a class="headerlink" href="#upstreampacketreceiveeventt" title="Permanent link">&para;</a></h3>
-<p><em>cancellable</em></p>
-<table>
-<thead>
-<tr>
-<th>Modifier and Type</th>
-<th>Method</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>GeyserSession</td>
-<td>getSession()</td>
-<td>Gets the current session</td>
-</tr>
-<tr>
-<td>T</td>
-<td>getPacket()</td>
-<td>Gets the Packet</td>
-</tr>
-</tbody>
-</table>
-<p>Triggered for each packet received from upstream. If cancelled then regular processing of the packet will not occur.</p>
-<p>The type of packet should be passed in as a Type. The filter should also be set to limit what packets you want otherwise
-every Upstream packet will trigger this handler.</p>
-<div class="admonition example">
-<p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code><span class="nd">@Event</span><span class="p">(</span><span class="n">filter</span> <span class="o">=</span> <span class="n">TextPacket</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">onTextPacket</span><span class="p">(</span><span class="n">UpstreamPacketReceiveEvent</span><span class="o">&lt;</span><span class="n">TextPacket</span><span class="o">&gt;</span> <span class="n">event</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">getLogger</span><span class="p">().</span><span class="na">warning</span><span class="p">(</span><span class="s">&quot;Got packet: &quot;</span> <span class="o">+</span> <span class="n">event</span><span class="p">.</span><span class="na">getPacket</span><span class="p">());</span>
-<span class="p">}</span>
-</code></pre></div>
-
-</div>
-<div class="admonition example">
-<p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code><span class="nd">@Event</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">onGenericPacket</span><span class="p">(</span><span class="n">UpstreamPacketReceiveEvent</span><span class="o">&lt;</span><span class="n">BedrockPacket</span><span class="o">&gt;</span> <span class="n">event</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">getLogger</span><span class="p">().</span><span class="na">warning</span><span class="p">(</span><span class="s">&quot;Got generic packet: &quot;</span> <span class="o">+</span> <span class="n">event</span><span class="p">.</span><span class="na">getPacket</span><span class="p">());</span>
-<span class="p">}</span>
-</code></pre></div>
-
-</div>
-<h3 id="upstreampacketsendeventt">UpstreamPacketSendEvent<code>&lt;T&gt;</code><a class="headerlink" href="#upstreampacketsendeventt" title="Permanent link">&para;</a></h3>
-<p><em>cancellable</em></p>
-<table>
-<thead>
-<tr>
-<th>Modifier and Type</th>
-<th>Method</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>GeyserSession</td>
-<td>getSession()</td>
-<td>Gets the current session</td>
-</tr>
-<tr>
-<td>T</td>
-<td>getPacket()</td>
-<td>Gets the Packet</td>
-</tr>
-</tbody>
-</table>
-<p>Triggered for each packet sent upstream. If cancelled then the packet will not be sent.</p>
-<p>The type of packet should be passed in as a Type. The filter should also be set to limit what packets you want otherwise
-every Upstream packet will trigger this handler.</p>
-<div class="admonition example">
-<p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code><span class="nd">@Event</span><span class="p">(</span><span class="n">filter</span> <span class="o">=</span> <span class="n">TextPacket</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">onTextPacket</span><span class="p">(</span><span class="n">UpstreamPacketSendEvent</span><span class="o">&lt;</span><span class="n">TextPacket</span><span class="o">&gt;</span> <span class="n">event</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">getLogger</span><span class="p">().</span><span class="na">warning</span><span class="p">(</span><span class="s">&quot;Sending packet: &quot;</span> <span class="o">+</span> <span class="n">event</span><span class="p">.</span><span class="na">getPacket</span><span class="p">());</span>
-<span class="p">}</span>
-</code></pre></div>
-
-</div>
-<div class="admonition example">
-<p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code><span class="nd">@Event</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">onGenericPacket</span><span class="p">(</span><span class="n">UpstreamPacketSendEvent</span><span class="o">&lt;</span><span class="n">BedrockPacket</span><span class="o">&gt;</span> <span class="n">event</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">getLogger</span><span class="p">().</span><span class="na">warning</span><span class="p">(</span><span class="s">&quot;Sending generic packet: &quot;</span> <span class="o">+</span> <span class="n">event</span><span class="p">.</span><span class="na">getPacket</span><span class="p">());</span>
-<span class="p">}</span>
-</code></pre></div>
-
-</div>
                 
                   
                     
@@ -902,7 +525,7 @@ every Upstream packet will trigger this handler.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class='timeago' datetime='1595951681000' locale='en'></span>
+      Last update: <span class='timeago' datetime='1596015544000' locale='en'></span>
     
   </small>
 </div>
