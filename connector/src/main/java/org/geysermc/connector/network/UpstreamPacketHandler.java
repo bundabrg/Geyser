@@ -84,6 +84,10 @@ public class UpstreamPacketHandler extends LoggingPacketHandler {
 
     @Override
     public boolean handle(ClientToServerHandshakePacket packet) {
+        if (connector.getEventManager().triggerEvent(UpstreamPacketReceiveEvent.of(session, packet)).isCancelled()) {
+            return true;
+        }
+
         PlayStatusPacket playStatus = new PlayStatusPacket();
         playStatus.setStatus(PlayStatusPacket.Status.LOGIN_SUCCESS);
         session.sendUpstreamPacket(playStatus);
