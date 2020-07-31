@@ -147,7 +147,7 @@ public class FileUtils {
 
         InputStream stream = FileUtils.class.getClassLoader().getResourceAsStream(resourceName);
 
-        ResourceReadEvent event = EventManager.getInstance().triggerEvent(new ResourceReadEvent(resource, stream)).getEvent();
+        ResourceReadEvent event = EventManager.getInstance().triggerEvent(new ResourceReadEvent(resourceName, stream)).getEvent();
 
         if (event.getInputStream() == null) {
             throw new AssertionError(LanguageUtils.getLocaleStringLog("geyser.toolbox.fail.resource", resourceName));
