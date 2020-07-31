@@ -26,16 +26,34 @@
 
 package org.geysermc.connector.event.events.network;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.geysermc.connector.event.events.CancellableGeyserEvent;
-import org.geysermc.connector.network.remote.RemoteServer;
+import lombok.NonNull;
+import org.geysermc.connector.event.Cancellable;
+import org.geysermc.connector.event.GeyserEvent;
+import org.geysermc.connector.event.Session;
 import org.geysermc.connector.network.session.GeyserSession;
 
-@EqualsAndHashCode(callSuper = true)
+/**
+ * Triggered when a new session is connected
+ *
+ * If cancelled then the session will be disconnected with {@code message} as the disconnection message
+ */
 @Data
-@AllArgsConstructor
-public class SessionConnectEvent extends CancellableGeyserEvent {
-    final GeyserSession session;
+@EqualsAndHashCode(callSuper = true)
+@SuppressWarnings("JavaDoc")
+public class SessionConnectEvent extends GeyserEvent implements Cancellable, Session {
+    private boolean cancelled;
+
+    @NonNull
+    private final GeyserSession session;
+
+    /**
+     * Message returned to client if connection is cancelled
+     *
+     * @param message set the message
+     * @return get current message
+     */
+    @NonNull
+    private String message;
 }

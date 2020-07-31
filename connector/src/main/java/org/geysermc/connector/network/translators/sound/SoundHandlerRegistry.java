@@ -37,7 +37,7 @@ import java.util.Map;
  */
 public class SoundHandlerRegistry {
 
-    static final Map<SoundHandler, SoundInteractionHandler<?>> INTERACTION_HANDLERS = new HashMap<>();
+    public static final Map<SoundHandler, SoundInteractionHandler<?>> INTERACTION_HANDLERS = new HashMap<>();
 
     public static final Register REGISTER = new Register();
 
@@ -54,12 +54,8 @@ public class SoundHandlerRegistry {
     private SoundHandlerRegistry() {
     }
 
-    /**
-     * Returns a map of the interaction handlers
-     *
-     * @return a map of the interaction handlers
-     */
-    public static Map<SoundHandler, SoundInteractionHandler<?>> getInteractionHandlers() {
-        return INTERACTION_HANDLERS;
+    public static void init() {
+        // no-op
     }
+
 }

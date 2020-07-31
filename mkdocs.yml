@@ -1,6 +1,6 @@
 site_name: GeyserMC
 site_author: Geyser Devs
-site_url: https://github.com/GeyserMC/Geyser
+site_url: https://bundabrg.github.io/Geyser
 site_dir: build/docs
 repo_name: GeyserMC/Geyser
 repo_url: https://github.com/GeyserMC/Geyser
@@ -22,8 +22,8 @@ theme:
   palette:
     primary: 'indigo'
     accent: 'indigo'
-  features:
-    - instant
+#  features:
+#    - instant
 
 
 
@@ -62,11 +62,11 @@ plugins:
         - 'theme/*'
   - git-revision-date-localized:
       type: timeago
-  - mkpdfs:
-      author: GeyserMC Developers
-      toc_title: Table of contents
-      output_path: pdf/documentation.pdf
-      design: docs/css/pdf.css
+#  - mkpdfs:
+#      author: GeyserMC Developers
+#      toc_title: Table of contents
+#      output_path: pdf/documentation.pdf
+#      design: docs/css/pdf.css
 
 # Discord not yet supported but it will be soon
 #extra:
@@ -78,4 +78,6 @@ nav:
   - Introduction: index.md
   - Events: events.md
   - Plugins: plugins.md
+  - Coding Hints: coding.md
   - Contributing: contributing.md
+  - API: 'https://bundabrg.github.io/Geyser/apidocs/'
