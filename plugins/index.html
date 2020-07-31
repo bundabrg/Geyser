@@ -321,6 +321,18 @@
 
 
   <li class="md-nav__item">
+    <a href="../coding/" title="Coding Hints" class="md-nav__link">
+      Coding Hints
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
     <a href="../contributing/" title="Contributing" class="md-nav__link">
       Contributing
     </a>
@@ -450,6 +462,13 @@
 <p>Geyser provides support for third party plugins which can be placed into a <code>plugins</code> folder under the Geyser data folder.</p>
 <p>Plugins provide a way to extend the features of Geyser without needing to deal with the Geyser code. </p>
 <p>This page describes how to write a plugin.</p>
+<div class="admonition alert">
+<p class="admonition-title">Alert</p>
+<p>Please keep in mind that Geyser itself may run as a plugin to a server or standalone. If you wish to have your plugin
+supported by a wide audience try to write it as if it runs on the standalone version of Geyser and thus does
+not have access to the server code. For example don't assume you can access the Spigot API unless you wish to limit
+your plugin to run only on Geyser running as a Spigot plugin.</p>
+</div>
 <h2 id="maven">Maven<a class="headerlink" href="#maven" title="Permanent link">&para;</a></h2>
 <p>Add the following to the relevant section of your <code>pom.xml</code></p>
 <div class="highlight"><pre><span></span><code><span class="nt">&lt;repositories&gt;</span>
@@ -602,7 +621,7 @@ with the plugin name prefixed in the messages.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class='timeago' datetime='1596015544000' locale='en'></span>
+      Last update: <span class='timeago' datetime='1596168324000' locale='en'></span>
     
   </small>
 </div>
@@ -640,13 +659,13 @@ with the plugin name prefixed in the messages.</p>
           </a>
         
         
-          <a href="../contributing/" title="Contributing" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../coding/" title="Coding Hints" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Contributing
+                Coding Hints
               </div>
             </div>
             <div class="md-footer-nav__button md-icon">
