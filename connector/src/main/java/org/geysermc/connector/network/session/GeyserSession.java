@@ -551,8 +551,7 @@ public class GeyserSession implements CommandSender {
             EventManager.getInstance().on(SetLocalPlayerAsInitializedPacketReceive.class, (e, h) -> {
                 h.unregister();
                 windowCache.showWindow(window, id);
-            })
-                    .build();
+            });
             return;
         }
 
@@ -580,8 +579,7 @@ public class GeyserSession implements CommandSender {
             EventManager.getInstance().on(SetLocalPlayerAsInitializedPacketReceive.class, (e, h) -> {
                 h.unregister();
                 windowCache.showWindow(window);
-            })
-                    .build();
+            });
             return;
         }
 
