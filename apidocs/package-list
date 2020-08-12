@@ -41,6 +41,9 @@ org.geysermc.connector.network.session.auth
 org.geysermc.connector.network.session.cache
 org.geysermc.connector.network.translators
 org.geysermc.connector.network.translators.bedrock
+org.geysermc.connector.network.translators.bedrock.entity
+org.geysermc.connector.network.translators.bedrock.entity.player
+org.geysermc.connector.network.translators.bedrock.world
 org.geysermc.connector.network.translators.effect
 org.geysermc.connector.network.translators.inventory
 org.geysermc.connector.network.translators.inventory.action
