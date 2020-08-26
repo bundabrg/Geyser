@@ -71,6 +71,7 @@ org.geysermc.connector.ping
 org.geysermc.connector.plugin
 org.geysermc.connector.plugin.annotations
 org.geysermc.connector.plugin.handlers
+org.geysermc.connector.plugin.relocator
 org.geysermc.connector.scoreboard
 org.geysermc.connector.utils
 org.geysermc.floodgate.util
