@@ -25,6 +25,7 @@
 
 package org.geysermc.connector;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nukkitx.network.raknet.RakNetConstants;
@@ -35,7 +36,9 @@ import org.geysermc.connector.bootstrap.GeyserBootstrap;
 import org.geysermc.connector.command.CommandManager;
 import org.geysermc.connector.common.AuthType;
 import org.geysermc.connector.common.PlatformType;
+import org.geysermc.connector.event.EventManager;
 import org.geysermc.connector.configuration.GeyserConfiguration;
+import org.geysermc.connector.extension.ExtensionManager;
 import org.geysermc.connector.metrics.Metrics;
 import org.geysermc.connector.network.ConnectorServerEventHandler;
 import org.geysermc.connector.network.remote.RemoteServer;
@@ -53,9 +56,11 @@ import org.geysermc.connector.network.translators.sound.SoundRegistry;
 import org.geysermc.connector.network.translators.world.WorldManager;
 import org.geysermc.connector.network.translators.world.block.BlockTranslator;
 import org.geysermc.connector.network.translators.world.block.entity.BlockEntityTranslator;
+import org.geysermc.connector.event.events.geyser.GeyserStopEvent;
 import org.geysermc.connector.utils.DimensionUtils;
 import org.geysermc.connector.utils.LanguageUtils;
 import org.geysermc.connector.utils.LocaleUtils;
+import org.geysermc.connector.utils.ResourcePack;
 
 import javax.naming.directory.Attribute;
 import javax.naming.directory.InitialDirContext;
@@ -73,7 +78,7 @@ import java.util.concurrent.TimeUnit;
 @Getter
 public class GeyserConnector {
 
-    public static final ObjectMapper JSON_MAPPER = new ObjectMapper().disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
+    public static final ObjectMapper JSON_MAPPER = new ObjectMapper().enable(JsonParser.Feature.IGNORE_UNDEFINED).enable(JsonParser.Feature.ALLOW_COMMENTS).disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
     public static final String NAME = "Geyser";
     public static final String VERSION = "DEV"; // A fallback for running in IDEs
@@ -95,6 +100,11 @@ public class GeyserConnector {
     private BedrockServer bedrockServer;
     private PlatformType platformType;
     private GeyserBootstrap bootstrap;
+
+    private final EventManager eventManager;
+    private final ExtensionManager extensionManager;
+
+    private final List<String> registeredPluginChannels = new ArrayList<>();
 
     private Metrics metrics;
 
@@ -120,6 +130,9 @@ public class GeyserConnector {
 
         logger.setDebug(config.isDebugMode());
 
+        this.eventManager = new EventManager(this);
+        this.extensionManager = new ExtensionManager(this, bootstrap.getConfigFolder().resolve("extensions").toFile());
+
         PacketTranslatorRegistry.init();
 
         /* Initialize translators and registries */
@@ -135,6 +148,8 @@ public class GeyserConnector {
         RecipeRegistry.init();
         SoundRegistry.init();
         SoundHandlerRegistry.init();
+
+        ResourcePack.loadPacks();
 
         if (platformType != PlatformType.STANDALONE && config.getRemote().getAddress().equals("auto")) {
             // Set the remote address to localhost since that is where we are always connecting
@@ -210,6 +225,9 @@ public class GeyserConnector {
             }
         }
 
+        // Enable Plugins
+        extensionManager.enableExtensions();
+
         double completeTime = (System.currentTimeMillis() - startupTime) / 1000D;
         String message = LanguageUtils.getLocaleStringLog("geyser.core.finish.done", new DecimalFormat("#.###").format(completeTime)) + " ";
         if (isGui) {
@@ -227,6 +245,12 @@ public class GeyserConnector {
     public void shutdown() {
         bootstrap.getGeyserLogger().info(LanguageUtils.getLocaleStringLog("geyser.core.shutdown"));
         shuttingDown = true;
+
+        // Trigger GeyserStop Events
+        eventManager.triggerEvent(new GeyserStopEvent());
+
+        // Disable Plugins
+        extensionManager.disableExtensions();
 
         if (players.size() >= 1) {
             bootstrap.getGeyserLogger().info(LanguageUtils.getLocaleStringLog("geyser.core.shutdown.kick.log", players.size()));
@@ -317,6 +341,44 @@ public class GeyserConnector {
     public boolean isProduction() {
         //noinspection ConstantConditions
         return !"DEV".equals(GeyserConnector.VERSION);
+    }
+
+    /**
+     * Register a Plugin Channel
+     *
+     * This will maintain what channels are registered and ensure new connections and existing connections
+     * are registered correctly
+     *
+     * @param channel Channel to register
+     */
+    public void registerPluginChannel(String channel) {
+        if (registeredPluginChannels.contains(channel)) {
+            return;
+        }
+
+        registeredPluginChannels.add(channel);
+        for ( GeyserSession session : players) {
+            session.registerPluginChannel(channel);
+        }
+    }
+
+    /**
+     * Unregister a Plugin Channel
+     *
+     * This will maintain what channels are registered and ensure new connections and existing connections
+     * are registered correctly
+     *
+     * @param channel Channel to unregister
+     */
+    public void unregisterPluginChannel(String channel) {
+        if (!registeredPluginChannels.contains(channel)) {
+            return;
+        }
+
+        registeredPluginChannels.remove(channel);
+        for ( GeyserSession session : players ) {
+            session.unregisterPluginChannel(channel);
+        }
     }
 
     public static GeyserConnector getInstance() {

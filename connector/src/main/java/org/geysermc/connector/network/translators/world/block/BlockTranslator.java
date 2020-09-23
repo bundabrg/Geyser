@@ -35,6 +35,8 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.geysermc.connector.GeyserConnector;
+import org.geysermc.connector.event.EventManager;
+import org.geysermc.connector.event.events.registry.BlockEntityRegistryEvent;
 import org.geysermc.connector.network.translators.world.block.entity.BlockEntity;
 import org.geysermc.connector.utils.FileUtils;
 import org.reflections.Reflections;
@@ -54,21 +56,21 @@ public class BlockTranslator {
     public static final int BEDROCK_AIR_ID;
     public static final int BEDROCK_WATER_ID;
 
-    private static final Int2IntMap JAVA_TO_BEDROCK_BLOCK_MAP = new Int2IntOpenHashMap();
-    private static final Int2IntMap BEDROCK_TO_JAVA_BLOCK_MAP = new Int2IntOpenHashMap();
+    public static final Int2IntMap JAVA_TO_BEDROCK_BLOCK_MAP = new Int2IntOpenHashMap();
+    public static final Int2IntMap BEDROCK_TO_JAVA_BLOCK_MAP = new Int2IntOpenHashMap();
     /**
      * Stores a list of differences in block identifiers.
      * Items will not be added to this list if the key and value is the same.
      */
-    private static final Object2ObjectMap<String, String> JAVA_TO_BEDROCK_IDENTIFIERS = new Object2ObjectOpenHashMap<>();
-    private static final BiMap<String, Integer> JAVA_ID_BLOCK_MAP = HashBiMap.create();
-    private static final IntSet WATERLOGGED = new IntOpenHashSet();
-    private static final Object2IntMap<NbtMap> ITEM_FRAMES = new Object2IntOpenHashMap<>();
+    public static final Object2ObjectMap<String, String> JAVA_TO_BEDROCK_IDENTIFIERS = new Object2ObjectOpenHashMap<>();
+    public static final BiMap<String, Integer> JAVA_ID_BLOCK_MAP = HashBiMap.create();
+    public static final IntSet WATERLOGGED = new IntOpenHashSet();
+    public static final Object2IntMap<NbtMap> ITEM_FRAMES = new Object2IntOpenHashMap<>();
 
     // Bedrock carpet ID, used in LlamaEntity.java for decoration
     public static final int CARPET = 171;
 
-    private static final Int2ObjectMap<String> JAVA_ID_TO_BLOCK_ENTITY_MAP = new Int2ObjectOpenHashMap<>();
+    public static final Int2ObjectMap<String> JAVA_ID_TO_BLOCK_ENTITY_MAP = new Int2ObjectOpenHashMap<>();
 
     public static final Int2DoubleMap JAVA_RUNTIME_ID_TO_HARDNESS = new Int2DoubleOpenHashMap();
     public static final Int2BooleanMap JAVA_RUNTIME_ID_TO_CAN_HARVEST_WITH_HAND = new Int2BooleanOpenHashMap();
@@ -88,7 +90,7 @@ public class BlockTranslator {
 
     public static final int JAVA_RUNTIME_SPAWNER_ID;
 
-    private static final int BLOCK_STATE_VERSION = 17825808;
+    public static final int BLOCK_STATE_VERSION = 17825808;
 
     static {
         /* Load block palette */
@@ -127,7 +129,9 @@ public class BlockTranslator {
         List<NbtMap> paletteList = new ArrayList<>();
 
         Reflections ref = GeyserConnector.getInstance().isProduction() ? FileUtils.getReflections("org.geysermc.connector.network.translators.world.block.entity") : new Reflections("org.geysermc.connector.network.translators.world.block.entity");
-        ref.getTypesAnnotatedWith(BlockEntity.class);
+        Set<Class<?>> blockEntityClasses = EventManager.getInstance().triggerEvent(new BlockEntityRegistryEvent(
+                ref.getTypesAnnotatedWith(BlockEntity.class)
+        )).getEvent().getRegisteredTranslators();
 
         int waterRuntimeId = -1;
         int javaRuntimeId = -1;
@@ -170,7 +174,7 @@ public class BlockTranslator {
             // Used for adding all "special" Java block states to block state map
             String identifier;
             String bedrockIdentifier = entry.getValue().get("bedrock_identifier").asText();
-            for (Class<?> clazz : ref.getTypesAnnotatedWith(BlockEntity.class)) {
+            for (Class<?> clazz : blockEntityClasses) {
                 identifier = clazz.getAnnotation(BlockEntity.class).regex();
                 // Endswith, or else the block bedrock gets picked up for bed
                 if (bedrockIdentifier.endsWith(identifier) && !identifier.equals("")) {
