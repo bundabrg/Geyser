@@ -127,7 +127,7 @@ public class SkullBlockEntityTranslator extends BlockEntityTranslator implements
 
         Vector3f rotationVector = Vector3f.from(rotation, 0, rotation);
 
-        PlayerEntity player = new PlayerEntity(gameProfile, 1, geyserId, Vector3f.from(x, y, z), Vector3f.ZERO, rotationVector );
+        PlayerEntity player = new PlayerEntity(gameProfile, 1, geyserId, Vector3f.from(x, y, z), Vector3f.ZERO, rotationVector, session);
         player.setPlayerList(false);
         player.setGeometry(SkinProvider.SkinGeometry.getSkull());
 
