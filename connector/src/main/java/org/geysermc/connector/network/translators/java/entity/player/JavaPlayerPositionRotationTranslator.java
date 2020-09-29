@@ -99,7 +99,9 @@ public class JavaPlayerPositionRotationTranslator extends PacketTranslator<Serve
 
         // Ignore certain move correction packets for smoother movement
         // These are never relative
-        if (packet.getRelative().isEmpty()) {
+        // When chunk caching is enabled this isn't needed as we shouldn't get these
+        if (!session.getConnector().getConfig().isCacheChunks() &&
+                packet.getRelative().isEmpty()) {
             double xDis = Math.abs(entity.getPosition().getX() - packet.getX());
             double yDis = entity.getPosition().getY() - packet.getY();
             double zDis = Math.abs(entity.getPosition().getZ() - packet.getZ());
@@ -124,8 +126,7 @@ public class JavaPlayerPositionRotationTranslator extends PacketTranslator<Serve
         double newYaw = packet.getYaw() +
                 (packet.getRelative().contains(PositionElement.YAW) ? entity.getBedrockRotation().getY() : 0);
 
-
-        session.setTeleportCache(new TeleportCache(newX, newY, newZ, packet.getTeleportId()));
+        session.addTeleport(new TeleportCache(newX, newY, newZ, newPitch, newYaw, packet.getTeleportId()));
         entity.moveAbsolute(session, Vector3f.from(newX, newY, newZ), (float) newYaw, (float) newPitch, true, true);
     }
 }

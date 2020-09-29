@@ -25,7 +25,14 @@
 
 package org.geysermc.connector.network.translators.bedrock.entity.player;
 
+import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPositionRotationPacket;
+import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerRotationPacket;
+import com.google.common.collect.BiMap;
 import com.nukkitx.math.vector.Vector3d;
+import com.nukkitx.math.vector.Vector3f;
+import com.nukkitx.protocol.bedrock.packet.MoveEntityAbsolutePacket;
+import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
+import com.nukkitx.protocol.bedrock.packet.SetEntityDataPacket;
 import org.geysermc.connector.common.ChatColor;
 import org.geysermc.connector.entity.Entity;
 import org.geysermc.connector.entity.PlayerEntity;
@@ -33,12 +40,12 @@ import org.geysermc.connector.entity.type.EntityType;
 import org.geysermc.connector.network.session.GeyserSession;
 import org.geysermc.connector.network.translators.PacketTranslator;
 import org.geysermc.connector.network.translators.Translator;
+import org.geysermc.connector.network.translators.world.block.BlockTranslator;
+import org.geysermc.connector.network.translators.world.collision.CollisionTranslator;
+import org.geysermc.connector.network.translators.world.collision.translators.BlockCollision;
 
-import com.github.steveice10.mc.protocol.packet.ingame.client.player.ClientPlayerPositionRotationPacket;
-import com.nukkitx.math.vector.Vector3f;
-import com.nukkitx.protocol.bedrock.packet.MoveEntityAbsolutePacket;
-import com.nukkitx.protocol.bedrock.packet.MovePlayerPacket;
-import com.nukkitx.protocol.bedrock.packet.SetEntityDataPacket;
+import java.util.Iterator;
+import java.util.List;
 
 @Translator(packet = MovePlayerPacket.class)
 public class BedrockMovePlayerTranslator extends PacketTranslator<MovePlayerPacket> {
@@ -59,16 +66,52 @@ public class BedrockMovePlayerTranslator extends PacketTranslator<MovePlayerPack
             return;
         }
 
+        // If only the pitch and yaw changed
+        // This isn't needed, but it makes the packets closer to vanilla
+        // It also means you can't "lag back" while only looking, in theory
+        if (entity.getPosition().equals(packet.getPosition())) {
+            ClientPlayerRotationPacket playerRotationPacket = new ClientPlayerRotationPacket(
+                    packet.isOnGround(), packet.getRotation().getY(), packet.getRotation().getX()
+            );
+
+            // head yaw, pitch, head yaw
+            Vector3f rotation = Vector3f.from(packet.getRotation().getY(), packet.getRotation().getX(), packet.getRotation().getY());
+            entity.setPosition(packet.getPosition().sub(0, EntityType.PLAYER.getOffset(), 0));
+            entity.setRotation(rotation);
+            entity.setOnGround(packet.isOnGround());
+
+            session.sendDownstreamPacket(playerRotationPacket);
+            return;
+        }
+
         // We need to parse the float as a string since casting a float to a double causes us to
         // lose precision and thus, causes players to get stuck when walking near walls
-        double javaY = packet.getPosition().getY() - EntityType.PLAYER.getOffset();
-        if (packet.isOnGround()) javaY = Math.ceil(javaY * 2) / 2;
+        double javaY = Double.parseDouble(Float.toString(packet.getPosition().getY())) - EntityType.PLAYER.getOffset();
 
         Vector3d position = Vector3d.from(Double.parseDouble(Float.toString(packet.getPosition().getX())), javaY,
                 Double.parseDouble(Float.toString(packet.getPosition().getZ())));
 
-        if(!session.confirmTeleport(position)){
+        if (!session.confirmTeleport(position)) {
             return;
+        }
+
+        if (session.getConnector().getConfig().isCacheChunks()) {
+            // With chunk caching, we can do some proper collision checks
+
+            session.getCollisionManager().updatePlayerBoundingBox(position);
+            session.getCollisionManager().correctPlayerPosition();
+
+            position = Vector3d.from(session.getCollisionManager().getPlayerBoundingBox().getMiddleX(),
+                    session.getCollisionManager().getPlayerBoundingBox().getMiddleY() -
+                            (session.getCollisionManager().getPlayerBoundingBox().getSizeY() / 2),
+                    session.getCollisionManager().getPlayerBoundingBox().getMiddleZ());
+        } else {
+            // When chunk caching is off, we have to rely on this
+            // It rounds the Y position up to the nearest 0.5
+            // This snaps players to snap to the top of stairs and slabs like on Java Edition
+            // However, it causes issues such as the player floating on carpets
+            if (packet.isOnGround()) javaY = Math.ceil(javaY * 2) / 2;
+            position = position.up(javaY - position.getY());
         }
 
         if (!isValidMove(session, packet.getMode(), entity.getPosition(), packet.getPosition())) {
@@ -94,17 +137,6 @@ public class BedrockMovePlayerTranslator extends PacketTranslator<MovePlayerPack
             entity.getRightParrot().moveAbsolute(session, entity.getPosition(), entity.getRotation(), true, false);
         }
 
-        /*
-        boolean colliding = false;
-        Position position = new Position((int) packet.getPosition().getX(),
-                (int) Math.ceil(javaY * 2) / 2, (int) packet.getPosition().getZ());
-
-        BlockEntry block = session.getChunkCache().getBlockAt(position);
-        if (!block.getJavaIdentifier().contains("air"))
-            colliding = true;
-
-        if (!colliding)
-         */
         session.sendDownstreamPacket(playerPositionRotationPacket);
     }
 
