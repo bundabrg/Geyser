@@ -1,3 +1,19 @@
+# Bleeding Notes
+This build is an experimental build of Geyser that includes the following features:
+
+* [Replace Spaces in Usernames with Underscores](https://github.com/GeyserMC/Geyser/pull/264)
+* [Custom Skulls](https://github.com/GeyserMC/Geyser/pull/683)
+* [Move Fixes](https://github.com/GeyserMC/Geyser/pull/699)
+* [Improve Playerlist](https://github.com/GeyserMC/Geyser/pull/711)
+* [Native Geyser Extension Support](https://github.com/GeyserMC/Geyser/pull/742)
+* [Improved Login Process](https://github.com/GeyserMC/Geyser/pull/1184)
+* [Remove 'geyser' from commands fix](https://github.com/GeyserMC/Geyser/pull/1266)
+
+There may well be bugs. You will likely receive no official support from Geyser support but any issues you
+encounter may still be interesting to report as this provides an easy way to test multiple possible future
+features. Feel free to add Bleeding specific issues to [my issue tracker](https://github.com/bundabrg/Geyser/issues)
+
+
 <img src="https://geysermc.org/img/geyser-1760-860.png" alt="Geyser" width="600"/>
 
 [![forthebadge made-with-java](http://ForTheBadge.com/images/badges/made-with-java.svg)](https://java.com/)
