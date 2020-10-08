@@ -430,14 +430,12 @@ if it should support a <a href="https://bundabrg.github.io/Geyser/apidocs/org/ge
 <div class="highlight"><pre><span></span><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyCustomEvent</span> <span class="kd">extends</span> <span class="n">GeyserEvent</span> <span class="kd">implements</span> <span class="n">Cancellable</span> <span class="p">{</span>
 <span class="p">}</span>
 </code></pre></div>
-
 </div>
 <p>The event can be triggered through the <code>triggerEvent</code> method of the <a href="https://bundabrg.github.io/Geyser/apidocs/org/geysermc/connector/event/EventManager.html">EventManager</a>.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
 <div class="highlight"><pre><span></span><code><span class="n">EventManager</span><span class="p">.</span><span class="na">getInstance</span><span class="p">().</span><span class="na">triggerEvent</span><span class="p">(</span><span class="k">new</span> <span class="n">MyCustomEvent</span><span class="p">());</span>
 </code></pre></div>
-
 </div>
 <p>This returns an <a href="https://bundabrg.github.io/Geyser/apidocs/org/geysermc/connector/event/EventResult.html">EventResult</a> 
 which can be used to chain additional commands based upon the result. They include <code>onNotCancelled()</code>, 
@@ -452,7 +450,6 @@ which can be used to chain additional commands based upon the result. They inclu
         <span class="c1">// Code executed if the above condition was not satisfied</span>
     <span class="p">});</span>
 </code></pre></div>
-
 </div>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
@@ -461,7 +458,6 @@ which can be used to chain additional commands based upon the result. They inclu
     <span class="c1">// do something</span>
 <span class="p">}</span>
 </code></pre></div>
-
 </div>
 <h2 id="listening-to-an-event">Listening to an Event<a class="headerlink" href="#listening-to-an-event" title="Permanent link">&para;</a></h2>
 <p>There are two ways to listen for an event. One can either create an event handler method or one can create an anonymous
@@ -483,7 +479,6 @@ The class it belongs to must also be registered with the event manager.</p>
 
 <span class="n">EventManager</span><span class="p">().</span><span class="na">getInstance</span><span class="p">().</span><span class="na">registerEvents</span><span class="p">(</span><span class="k">new</span> <span class="n">MyClass</span><span class="p">());</span>
 </code></pre></div>
-
 </div>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
@@ -501,7 +496,6 @@ method listeners. You will need to remember to unregister an event handler when 
 <span class="p">})</span>
     <span class="p">.</span><span class="na">build</span><span class="p">();</span>
 </code></pre></div>
-
 </div>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
@@ -523,7 +517,6 @@ method listeners. You will need to remember to unregister an event handler when 
     <span class="p">.</span><span class="na">ignoreCancelled</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
     <span class="p">.</span><span class="na">build</span><span class="p">();</span>
 </code></pre></div>
-
 </div>
 <h2 id="events_1">Events<a class="headerlink" href="#events_1" title="Permanent link">&para;</a></h2>
 <p>Please refer to the <a href="https://bundabrg.github.io/Geyser/apidocs/">API Docs</a> for more information. Geyser events are
@@ -537,7 +530,7 @@ defined under <code>org.geysermc.connector.event.events</code>.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class='timeago' datetime='1601345890000' locale='en'></span>
+      Last update: <span class='timeago' datetime='1602122029000' locale='en'></span>
     
   </small>
 </div>

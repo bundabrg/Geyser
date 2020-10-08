@@ -495,7 +495,6 @@ your extension to run only on Geyser running as a Spigot plugin.</p>
     <span class="nt">&lt;/dependency&gt;</span>
 <span class="nt">&lt;/dependencies&gt;</span>
 </code></pre></div>
-
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>Extension support is presently only available through a feature branch and thus there will be references to a third party
@@ -533,7 +532,6 @@ maven repository that holds a build of this branch.  This will change in the fut
         <span class="p">}</span>
     <span class="p">}</span>
 </code></pre></div>
-
 <h2 id="extension-entrypoint">Extension EntryPoint<a class="headerlink" href="#extension-entrypoint" title="Permanent link">&para;</a></h2>
 <p>A extension must at a minimum define a class that extends <a href="https://bundabrg.github.io/Geyser/apidocs/org/geysermc/connector/extension/GeyserExtension.html">GeyserExtension</a> 
 and be annotated with <a href="https://bundabrg.github.io/Geyser/apidocs/org/geysermc/connector/extension/annotations/Extension.html">@Extension</a>. The annotation 
@@ -576,7 +574,6 @@ this can be found <a href="https://www.spigotmc.org/wiki/bukkit-bungee-plugin-me
 <span class="n">out</span><span class="p">.</span><span class="na">writeUTF</span><span class="p">(</span><span class="s">&quot;Data2&quot;</span><span class="p">);</span>
 <span class="n">session</span><span class="p">.</span><span class="na">sendPluginMessage</span><span class="p">(</span><span class="s">&quot;myextension:channel&quot;</span><span class="p">,</span> <span class="n">out</span><span class="p">.</span><span class="na">toByteArray</span><span class="p">());</span>
 </code></pre></div>
-
 </div>
 <h3 id="receiving-plugin-messages">Receiving Plugin Messages<a class="headerlink" href="#receiving-plugin-messages" title="Permanent link">&para;</a></h3>
 <p>To receive plugin messages you need to first register to receive the message then listen for the <code>PluginMessageEvent</code>.</p>
@@ -595,7 +592,6 @@ this can be found <a href="https://www.spigotmc.org/wiki/bukkit-bungee-plugin-me
     <span class="p">...</span>
 <span class="p">}</span>
 </code></pre></div>
-
 </div>
 <h2 id="logging">Logging<a class="headerlink" href="#logging" title="Permanent link">&para;</a></h2>
 <p>Extension classes use their <code>getLogger()</code> to retrieve a logging interface. This will log messages to the regular log
@@ -610,7 +606,6 @@ with the extension name prefixed in the messages.</p>
     <span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
-
 </div>
                 
                   
@@ -620,7 +615,7 @@ with the extension name prefixed in the messages.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class='timeago' datetime='1601345890000' locale='en'></span>
+      Last update: <span class='timeago' datetime='1602122029000' locale='en'></span>
     
   </small>
 </div>
