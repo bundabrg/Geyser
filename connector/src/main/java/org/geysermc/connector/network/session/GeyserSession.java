@@ -105,6 +105,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -239,6 +240,13 @@ public class GeyserSession implements CommandSender {
      */
     @Setter
     private long lastInteractionTime;
+
+    /**
+     * Stores a future interaction to place a bucket. Will be cancelled if the client instead intended to
+     * interact with a block.
+     */
+    @Setter
+    private ScheduledFuture<?> bucketScheduledFuture;
 
     private boolean reducedDebugInfo = false;
 
