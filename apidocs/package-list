@@ -1,3 +1,4 @@
+org.geysermc.common
 org.geysermc.common.window
 org.geysermc.common.window.button
 org.geysermc.common.window.component
@@ -48,6 +49,7 @@ org.geysermc.connector.network.translators.bedrock
 org.geysermc.connector.network.translators.bedrock.entity
 org.geysermc.connector.network.translators.bedrock.entity.player
 org.geysermc.connector.network.translators.bedrock.world
+org.geysermc.connector.network.translators.chat
 org.geysermc.connector.network.translators.effect
 org.geysermc.connector.network.translators.inventory
 org.geysermc.connector.network.translators.inventory.action
