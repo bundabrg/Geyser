@@ -423,7 +423,7 @@ in turn based upon their priority.</p>
 <h2 id="triggering-an-event">Triggering an Event<a class="headerlink" href="#triggering-an-event" title="Permanent link">&para;</a></h2>
 <p>An event derives from <a href="https://bundabrg.github.io/Geyser/apidocs/org/geysermc/connector/event/GeyserEvent.html">GeyserEvent</a> 
 and can implement <a href="https://bundabrg.github.io/Geyser/apidocs/org/geysermc/connector/event/Cancellable.html">Cancellable</a> 
-if it should support being cancelled, and <a href="https://bundabrg.github.io/Geyser/apidocs/org/geysermc/connector/event/Session.html">Session</a> 
+if it should support being cancelled, and <a href="https://bundabrg.github.io/Geyser/apidocs/org/geysermc/connector/event/EventSession.html">EventSession</a> 
 if it should support a <a href="https://bundabrg.github.io/Geyser/apidocs/org/geysermc/connector/network/session/GeyserSession.html">GeyserSession</a>.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
@@ -505,7 +505,7 @@ method listeners. You will need to remember to unregister an event handler when 
 <code>build()</code> that generates the EventHandler and registers it with the EventManager. </p>
 <p>The following additional parameters are available:</p>
 <ul>
-<li><code>priority(int)</code> - Set the event priority. Default <code>EventHandler.PRIORITY.NORMAL</code></li>
+<li><code>priority(int)</code> - Set the event priority. Default <code>EventHandler.Priority.NORMAL</code></li>
 <li><code>ignoreCancelled(boolean)</code> - If true the handler will not execute if cancelled. Default <code>true</code>.</li>
 </ul>
 <div class="admonition example">
@@ -530,7 +530,7 @@ defined under <code>org.geysermc.connector.event.events</code>.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class='timeago' datetime='1607392340000' locale='en'></span>
+      Last update: <span class='timeago' datetime='1607393760000' locale='en'></span>
     
   </small>
 </div>
