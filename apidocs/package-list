@@ -78,6 +78,7 @@ org.geysermc.connector.network.translators.world.chunk
 org.geysermc.connector.network.translators.world.chunk.bitarray
 org.geysermc.connector.ping
 org.geysermc.connector.scoreboard
+org.geysermc.connector.skin
 org.geysermc.connector.utils
 org.geysermc.floodgate.util
 org.geysermc.platform.bungeecord
