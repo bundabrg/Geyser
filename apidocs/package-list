@@ -55,8 +55,12 @@ org.geysermc.connector.network.translators.collision
 org.geysermc.connector.network.translators.collision.translators
 org.geysermc.connector.network.translators.effect
 org.geysermc.connector.network.translators.inventory
-org.geysermc.connector.network.translators.inventory.action
+org.geysermc.connector.network.translators.inventory.click
 org.geysermc.connector.network.translators.inventory.holder
+org.geysermc.connector.network.translators.inventory.translators
+org.geysermc.connector.network.translators.inventory.translators.chest
+org.geysermc.connector.network.translators.inventory.translators.furnace
+org.geysermc.connector.network.translators.inventory.translators.horse
 org.geysermc.connector.network.translators.inventory.updater
 org.geysermc.connector.network.translators.item
 org.geysermc.connector.network.translators.item.translators
