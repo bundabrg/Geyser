@@ -33,14 +33,8 @@ import com.nukkitx.protocol.bedrock.v428.Bedrock_v428;
 import org.geysermc.connector.GeyserConnector;
 import org.geysermc.connector.common.AuthType;
 import org.geysermc.connector.configuration.GeyserConfiguration;
-import org.geysermc.connector.GeyserConnector;
 import org.geysermc.connector.event.EventResult;
 import org.geysermc.connector.event.events.packet.UpstreamPacketReceiveEvent;
-import org.geysermc.connector.event.events.packet.upstream.LoginPacketReceive;
-import org.geysermc.connector.event.events.packet.upstream.ModalFormResponsePacketReceive;
-import org.geysermc.connector.event.events.packet.upstream.MovePlayerPacketReceive;
-import org.geysermc.connector.event.events.packet.upstream.ResourcePackClientResponsePacketReceive;
-import org.geysermc.connector.event.events.packet.upstream.SetLocalPlayerAsInitializedPacketReceive;
 import org.geysermc.connector.network.session.GeyserSession;
 import org.geysermc.connector.network.session.cache.AdvancementsCache;
 import org.geysermc.connector.network.translators.PacketTranslatorRegistry;
@@ -58,7 +52,7 @@ public class UpstreamPacketHandler extends LoggingPacketHandler {
     }
 
     private <T extends BedrockPacket> boolean translateAndDefault(T packet) {
-        EventResult<UpstreamPacketReceiveEvent<T>> result = connector.getEventManager().triggerEvent(UpstreamPacketReceiveEvent.of(session, packet));
+        EventResult<UpstreamPacketReceiveEvent<T>> result = connector.getEventManager().triggerEvent(new UpstreamPacketReceiveEvent<>(session, packet));
         if (result.isCancelled()) {
             return true;
         }
@@ -70,7 +64,7 @@ public class UpstreamPacketHandler extends LoggingPacketHandler {
 
     @Override
     public boolean handle(LoginPacket loginPacket) {
-        EventResult<LoginPacketReceive> result = connector.getEventManager().triggerEvent(UpstreamPacketReceiveEvent.of(session, loginPacket));
+        EventResult<UpstreamPacketReceiveEvent<LoginPacket>> result = connector.getEventManager().triggerEvent(new UpstreamPacketReceiveEvent<>(session, loginPacket));
         if (result.isCancelled()) {
             return true;
         }
@@ -117,7 +111,7 @@ public class UpstreamPacketHandler extends LoggingPacketHandler {
 
     @Override
     public boolean handle(ResourcePackClientResponsePacket packet) {
-        EventResult<ResourcePackClientResponsePacketReceive> result = connector.getEventManager().triggerEvent(UpstreamPacketReceiveEvent.of(session, packet));
+        EventResult<UpstreamPacketReceiveEvent<ResourcePackClientResponsePacket>> result = connector.getEventManager().triggerEvent(new UpstreamPacketReceiveEvent<>(session, packet));
         if (result.isCancelled()) {
             return true;
         }
@@ -175,7 +169,7 @@ public class UpstreamPacketHandler extends LoggingPacketHandler {
 
     @Override
     public boolean handle(ModalFormResponsePacket packet) {
-        EventResult<ModalFormResponsePacketReceive> result = connector.getEventManager().triggerEvent(UpstreamPacketReceiveEvent.of(session, packet));
+        EventResult<UpstreamPacketReceiveEvent<ModalFormResponsePacket>> result = connector.getEventManager().triggerEvent(new UpstreamPacketReceiveEvent<>(session, packet));
         if (result.isCancelled()) {
             return true;
         }
@@ -220,7 +214,7 @@ public class UpstreamPacketHandler extends LoggingPacketHandler {
 
     @Override
     public boolean handle(SetLocalPlayerAsInitializedPacket packet) {
-        EventResult<SetLocalPlayerAsInitializedPacketReceive> result = connector.getEventManager().triggerEvent(UpstreamPacketReceiveEvent.of(session, packet));
+        EventResult<UpstreamPacketReceiveEvent<SetLocalPlayerAsInitializedPacket>> result = connector.getEventManager().triggerEvent(new UpstreamPacketReceiveEvent<>(session, packet));
         if (result.isCancelled()) {
             return true;
         }
@@ -241,7 +235,7 @@ public class UpstreamPacketHandler extends LoggingPacketHandler {
 
     @Override
     public boolean handle(MovePlayerPacket packet) {
-        EventResult<MovePlayerPacketReceive> result = connector.getEventManager().triggerEvent(UpstreamPacketReceiveEvent.of(session, packet));
+        EventResult<UpstreamPacketReceiveEvent<MovePlayerPacket>> result = connector.getEventManager().triggerEvent(new UpstreamPacketReceiveEvent<>(session, packet));
         if (result.isCancelled()) {
             return true;
         }
@@ -268,6 +262,13 @@ public class UpstreamPacketHandler extends LoggingPacketHandler {
 
     @Override
     public boolean handle(ResourcePackChunkRequestPacket packet) {
+        EventResult<UpstreamPacketReceiveEvent<ResourcePackChunkRequestPacket>> result = connector.getEventManager().triggerEvent(new UpstreamPacketReceiveEvent<>(session, packet));
+        if (result.isCancelled()) {
+            return true;
+        }
+
+        packet = result.getEvent().getPacket();
+
         ResourcePackChunkDataPacket data = new ResourcePackChunkDataPacket();
         ResourcePack pack = ResourcePack.PACKS.get(packet.getPackId().toString());
 

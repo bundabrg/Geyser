@@ -43,10 +43,7 @@ import java.util.Map;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @SuppressWarnings("JavaDoc")
-public abstract class DownstreamPacketSendEvent<T extends Packet> extends GeyserEvent implements Cancellable, EventSession {
-    // Cache of Packet Class to Event Class
-    private static final Map<Class<? extends Packet>, Class<?>> classMap = new HashMap<>();
-
+public class DownstreamPacketSendEvent<T extends Packet> extends GeyserEvent implements Cancellable, EventSession {
     private boolean cancelled;
 
     @NonNull
@@ -60,32 +57,4 @@ public abstract class DownstreamPacketSendEvent<T extends Packet> extends Geyser
      */
     @NonNull
     private T packet;
-
-    /**
-     * Create a new DownstreamPacketSendEvent based on the packet type
-     * @param session player session
-     * @param packet the packet to wrap
-     * @return an instantiated class that inherits from this one
-     */
-    public static <T extends Packet> DownstreamPacketSendEvent<T> of(GeyserSession session, T packet) {
-        Class<?> cls = classMap.get(packet.getClass());
-        if (cls == null) {
-            try {
-                cls = Class.forName(String.format("org.geysermc.connector.event.events.packet.downstream.%sSend", packet.getClass().getSimpleName()));
-            } catch (ClassNotFoundException e) {
-                GeyserConnector.getInstance().getLogger().error("Missing event for packet: " + packet.getClass());
-                return null;
-            }
-
-            classMap.put(packet.getClass(), cls);
-        }
-
-        try {
-            //noinspection unchecked
-            return (DownstreamPacketSendEvent<T>) cls.getConstructor(GeyserSession.class, packet.getClass()).newInstance(session, packet);
-        } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 }

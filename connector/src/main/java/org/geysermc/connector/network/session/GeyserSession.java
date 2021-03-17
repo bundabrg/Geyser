@@ -756,7 +756,8 @@ public class GeyserSession implements CommandSender {
             }
         }
 
-        EventResult<DownstreamPacketReceiveEvent<?>> result = EventManager.getInstance().triggerEvent(DownstreamPacketReceiveEvent.of(this, packet));
+//        EventResult<DownstreamPacketReceiveEvent<?>> result = EventManager.getInstance().triggerEvent(DownstreamPacketReceiveEvent.of(this, packet));
+        EventResult<DownstreamPacketReceiveEvent<?>> result = EventManager.getInstance().triggerEvent(new DownstreamPacketReceiveEvent<>(this, packet));
         if (!result.isCancelled()) {
             PacketTranslatorRegistry.JAVA_TRANSLATOR.translate(result.getEvent().getPacket().getClass(), result.getEvent().getPacket(), this);
         }
@@ -1053,7 +1054,7 @@ public class GeyserSession implements CommandSender {
      * @param packet the bedrock packet from the NukkitX protocol lib
      */
     public void sendUpstreamPacket(BedrockPacket packet) {
-        EventManager.getInstance().triggerEvent(UpstreamPacketSendEvent.of(this, packet))
+        EventManager.getInstance().triggerEvent(new UpstreamPacketSendEvent<>(this, packet))
                 .onNotCancelled(result -> {
                     if (upstream != null) {
                         upstream.sendPacket(result.getEvent().getPacket());
@@ -1088,7 +1089,7 @@ public class GeyserSession implements CommandSender {
      * @param packet the bedrock packet from the NukkitX protocol lib
      */
     public void sendUpstreamPacketImmediately(BedrockPacket packet) {
-        EventManager.getInstance().triggerEvent(UpstreamPacketSendEvent.of(this, packet))
+        EventManager.getInstance().triggerEvent(new UpstreamPacketSendEvent<>(this, packet))
                 .onNotCancelled(result -> {
                     if (upstream != null) {
                         upstream.sendPacketImmediately(result.getEvent().getPacket());
@@ -1104,7 +1105,7 @@ public class GeyserSession implements CommandSender {
      * @param packet the java edition packet from MCProtocolLib
      */
     public void sendDownstreamPacket(Packet packet) {
-        EventManager.getInstance().triggerEvent(DownstreamPacketSendEvent.of(this, packet))
+        EventManager.getInstance().triggerEvent(new DownstreamPacketSendEvent<>(this, packet))
                 .onNotCancelled(result -> {
                     if (downstream != null && downstream.getSession() != null && (protocol.getSubProtocol().equals(SubProtocol.GAME) || packet.getClass() == LoginPluginResponsePacket.class)) {
                         downstream.getSession().send(result.getEvent().getPacket());

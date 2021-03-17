@@ -86,7 +86,7 @@ public abstract class GeyserExtension {
         return on(cls, (event, handler) -> consumer.accept(event));
     }
 
-    public <T extends GeyserEvent> ExtensionLambdaEventHandler<T> on(Class<T> cls, BiConsumer<T, EventHandler<T>> consumer) {
+    public <T extends GeyserEvent, U> ExtensionLambdaEventHandler<T> on(Class<T> cls, BiConsumer<T, EventHandler<T>> consumer) {
         return new ExtensionLambdaEventHandler<>(this, cls, consumer);
     }
 
