@@ -41,7 +41,6 @@ org.geysermc.connector.extension.relocator
 org.geysermc.connector.inventory
 org.geysermc.connector.metrics
 org.geysermc.connector.network
-org.geysermc.connector.network.remote
 org.geysermc.connector.network.session
 org.geysermc.connector.network.session.auth
 org.geysermc.connector.network.session.cache
