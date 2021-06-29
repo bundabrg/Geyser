@@ -1,8 +1,4 @@
 org.geysermc.common
-org.geysermc.common.window
-org.geysermc.common.window.button
-org.geysermc.common.window.component
-org.geysermc.common.window.response
 org.geysermc.connector
 org.geysermc.connector.bootstrap
 org.geysermc.connector.command
@@ -69,6 +65,7 @@ org.geysermc.connector.network.translators.java.entity
 org.geysermc.connector.network.translators.java.entity.player
 org.geysermc.connector.network.translators.java.entity.spawn
 org.geysermc.connector.network.translators.java.scoreboard
+org.geysermc.connector.network.translators.java.title
 org.geysermc.connector.network.translators.java.window
 org.geysermc.connector.network.translators.java.world
 org.geysermc.connector.network.translators.sound
@@ -80,9 +77,14 @@ org.geysermc.connector.network.translators.world.block.entity
 org.geysermc.connector.network.translators.world.chunk
 org.geysermc.connector.network.translators.world.chunk.bitarray
 org.geysermc.connector.ping
+org.geysermc.connector.registry.type
 org.geysermc.connector.scoreboard
 org.geysermc.connector.skin
 org.geysermc.connector.utils
+org.geysermc.floodgate.crypto
+org.geysermc.floodgate.news
+org.geysermc.floodgate.news.data
+org.geysermc.floodgate.time
 org.geysermc.floodgate.util
 org.geysermc.platform.bungeecord
 org.geysermc.platform.bungeecord.command
